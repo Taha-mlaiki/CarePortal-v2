@@ -41,7 +41,7 @@ const Sidebar = () => {
       {/* Mobile Sidebar Toggle */}
       <div className="lg:hidden fixed top-4 mb-10 left-4 z-50">
         <Button
-          variant="default"
+          variant="ghost"
           size="icon"
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >

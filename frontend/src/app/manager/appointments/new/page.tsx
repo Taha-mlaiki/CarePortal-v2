@@ -2,7 +2,6 @@
 
 
 import { BackButton } from '@/components/BackButton'
-import { AppointmentStatus } from '@prisma/client'
 import Image from 'next/image'
 import React from 'react'
 import { AppointmentForm } from '../_components/AppointmentForm'

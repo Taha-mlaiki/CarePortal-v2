@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
+import Header from "../_components/Header";
 
 const Charts = dynamic(() => import("../_components/Charts"), {
   ssr: false,
@@ -65,14 +66,7 @@ const MedicalDashboard = () => {
     >
       <div className="p-4 md:p-8">
         {/* Header */}
-        <div className="mb-8 mt-10 md:mt-0">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Dashboard Overview
-          </h1>
-          <p className="text-gray-500">
-            Welcome back! Here&apos;s your practice at a glance.
-          </p>
-        </div>
+       <Header title="Dashboard Overview" description="Welcome back! Here's your practice at a glance." /> 
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">

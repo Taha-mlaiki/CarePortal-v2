@@ -1,22 +1,27 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArchiveX, Calendar, Check, Hourglass, Phone, Trash2, X } from "lucide-react";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { format } from "date-fns";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { usePatientDetails } from "@/hooks/use-patient-details";
-import { useCancelAppoint } from "@/hooks/use-cancel-appoint";
-import { archiveAppointment } from "@/actions/appointment/archiveApp";
-import { toast } from "sonner";
-import { scheduleApp } from "@/actions/appointment/schedule";
-import { onComplete } from "@/actions/appointment/completeApp";
+import { Calendar, Check, Hourglass, Phone, X } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
+import { format } from "date-fns/format";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { usePatientDetails } from "@/hooks/use-patient-details";
+// import { useCancelAppoint } from "@/hooks/use-cancel-appoint";
+// import { toast } from "sonner";
+
+type Appointment = {
+  patient_name: string;
+  patient_phone: string;
+  date: Date; // Note: In your columns, you used "Date" (capital D), but it should match "date" here
+  status: string;
+  ticket: number; // Note: In your columns, you used "order" in the cell, but it should be "ticket"
+};
 export const columns: ColumnDef<Appointment>[] = [
   {
     accessorKey: "patient_name",
@@ -45,7 +50,7 @@ export const columns: ColumnDef<Appointment>[] = [
   },
   {
     accessorKey: "patient_phone",
-    header: ({ column }) => {
+    header: () => {
       return (
         <div className="flex items-center justify-center ">
           <Phone className="mr-2 h-4 w-4" />
@@ -74,14 +79,14 @@ export const columns: ColumnDef<Appointment>[] = [
       const data = row.original;
       return (
         <div className="flex items-center justify-center gap-x-3">
-          {format(data.Date, "MMMM/dd/yyyy")}
+          {format(data.date, "MMMM/dd/yyyy")}
         </div>
       );
     },
   },
   {
     accessorKey: "status",
-    header: ({ column }) => <div className="text-center">Status</div>,
+    header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
       const data = row.original;
       switch (data.status) {
@@ -111,106 +116,107 @@ export const columns: ColumnDef<Appointment>[] = [
   },
   {
     accessorKey: "ticket",
-    header: ({ column }) => <div className="text-center">Ticket order</div>,
+    header: () => <div className="text-center">Ticket order</div>,
     cell: ({ row }) => {
       const data = row.original;
-      if(data.order === 0 ){
+      if(data.ticket === 0 ){
         return (
           <p className="text-neutral-600 text-center">No ticket</p> 
         )
       }else {
         return <div className="font-bold text-xl text-center">
-            {data.order}
+            {data.ticket}
         </div>
       }
     }
   },
   {
     header: "Actions",
-    cell: ({ row }) => {
+    cell: () => {
 
-      const RenderCell = ()=>{
-        const data = row.original;
-        const usePatient = usePatientDetails((state) => state);
-        const useCancelApp = useCancelAppoint((state)=> state)
+      // const RenderCell = ()=>{
+      //   const data = row.original;
+      //   const usePatient = usePatientDetails((state) => state);
+      //   const useCancelApp = useCancelAppoint((state)=> state)
   
-        const onArchived = async ()=>{
-          const res = await archiveAppointment(data.id)
-           if(res.success){
-            toast.success(res.success)
-           }else if(res.error){
-            window.document.location.reload()
-            toast.error(res.error)
-           }
-        }
+      //   const onArchived = async ()=>{
+      //     const res = await archiveAppointment(data.id)
+      //      if(res.success){
+      //       toast.success(res.success)
+      //      }else if(res.error){
+      //       window.document.location.reload()
+      //       toast.error(res.error)
+      //      }
+      //   }
   
-        const onSchedule = async ()=>{
-            const res = await scheduleApp(data.id)
-            if(res.success){
-              toast.success(res.success)
-            } else if(res.error){
-              toast.error(res.error)
-            }
-        }
+      //   const onSchedule = async ()=>{
+      //       const res = await scheduleApp(data.id)
+      //       if(res.success){
+      //         toast.success(res.success)
+      //       } else if(res.error){
+      //         toast.error(res.error)
+      //       }
+      //   }
   
-        const complete = async ()=>{
-          const res = await onComplete(data.id)
-          if(res.success){
-            toast.success(res.success)
-          }else if(res.error){
-            toast.error(res.error)
-          }
-        }
+      //   const complete = async ()=>{
+      //     const res = await onComplete(data.id)
+      //     if(res.success){
+      //       toast.success(res.success)
+      //     }else if(res.error){
+      //       toast.error(res.error)
+      //     }
+      //   }
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="text-center">
-                Actions
-              </DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => usePatient.setOpen(data.id)}>
-                View details
-              </DropdownMenuItem>
-              {data.status === "Scheduled" && (
-                <DropdownMenuItem onClick={() => complete()}>
-                 <span className="text-green-600">Completed</span>
-               </DropdownMenuItem>
-              )}
-              {data.status === "Pending"  && (
-                <DropdownMenuItem onClick={()=> onSchedule()}>
-                    <p className="text-green-500">Schedule</p>
-                </DropdownMenuItem>
-              )}
-              {data.status === "Cancelled" ? 
-                    (
-                    <DropdownMenuItem onClick={()=> onArchived()}>
-                          <div className="text-red-500 w-full flex items-center justify-between">
-                            <p>Archived</p>
-                            <ArchiveX className="w-4 h-4" />
-                          </div>
-                      </DropdownMenuItem>
-                    )
-                    :
-                    (
-                      <DropdownMenuItem onClick={()=> useCancelApp.setOpen(data.id)}>
-                          <p className="text-red-500">Cancel</p>
-                      </DropdownMenuItem>
-                    )
-              }
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
+      //   return (
+      //     <DropdownMenu>
+      //       <DropdownMenuTrigger asChild>
+      //         <Button variant="ghost" className="h-8 w-8 p-0">
+      //           <span className="sr-only">Open menu</span>
+      //           <MoreHorizontal className="h-4 w-4" />
+      //         </Button>
+      //       </DropdownMenuTrigger>
+      //       <DropdownMenuContent align="end">
+      //         <DropdownMenuLabel className="text-center">
+      //           Actions
+      //         </DropdownMenuLabel>
+      //         <DropdownMenuItem onClick={() => usePatient.setOpen(data.id)}>
+      //           View details
+      //         </DropdownMenuItem>
+      //         {data.status === "Scheduled" && (
+      //           <DropdownMenuItem onClick={() => complete()}>
+      //            <span className="text-green-600">Completed</span>
+      //          </DropdownMenuItem>
+      //         )}
+      //         {data.status === "Pending"  && (
+      //           <DropdownMenuItem onClick={()=> onSchedule()}>
+      //               <p className="text-green-500">Schedule</p>
+      //           </DropdownMenuItem>
+      //         )}
+      //         {data.status === "Cancelled" ? 
+      //               (
+      //               <DropdownMenuItem onClick={()=> onArchived()}>
+      //                     <div className="text-red-500 w-full flex items-center justify-between">
+      //                       <p>Archived</p>
+      //                       <ArchiveX className="w-4 h-4" />
+      //                     </div>
+      //                 </DropdownMenuItem>
+      //               )
+      //               :
+      //               (
+      //                 <DropdownMenuItem onClick={()=> useCancelApp.setOpen(data.id)}>
+      //                     <p className="text-red-500">Cancel</p>
+      //                 </DropdownMenuItem>
+      //               )
+      //         }
+      //       </DropdownMenuContent>
+      //     </DropdownMenu>
+      //   );
 
-      }
+      // }
 
-      return <RenderCell />
-      
+      return <div>
+          actions
+        </div>
     },
   },
 ];
