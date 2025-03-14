@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "1.1.1",
     "@radix-ui/react-dialog": "1.1.6",
@@ -24,6 +25,8 @@
     "@radix-ui/react-tabs": "^1.1.0",
     "@tanstack/react-query": "5.67.2",
     "@tanstack/react-table": "8.19.3",
+    "aceternity": "^1.0.1",
+    "aceternity-ui": "^0.2.2",
     "axios": "1.8.1",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

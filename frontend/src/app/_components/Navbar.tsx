@@ -17,7 +17,7 @@ export const Navbar = ()=>{
             </div>
             <div className="flex items-center gap-x-2 z-10">
                 <Button variant="secondary">
-                    <Link href="/appointment">
+                    <Link href="/payment">
                         Book an appointment
                     </Link>
                 </Button>

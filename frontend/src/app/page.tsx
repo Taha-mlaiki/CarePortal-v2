@@ -104,7 +104,7 @@ const LandingPage = () => {
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
             Key Features
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2  gap-8">
             {[
               {
                 icon: <Calendar className="w-6 h-6" />,
@@ -118,7 +118,7 @@ const LandingPage = () => {
               },
               {
                 icon: <Bell className="w-6 h-6" />,
-                title: "SMS Notifications",
+                title: "Email And in-app Notifications",
                 description: "Get timely updates about your appointments",
               },
               {
