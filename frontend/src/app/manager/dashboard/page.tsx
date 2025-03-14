@@ -44,12 +44,6 @@ const MedicalDashboard = () => {
       trend: "-2% vs last month",
     },
     {
-      title: "Revenue",
-      value: "$5,240",
-      icon: DollarSign,
-      trend: "+15% vs last month",
-    },
-    {
       title: "Busiest Day",
       value: "Thursday",
       icon: TrendingUp,
@@ -61,10 +55,10 @@ const MedicalDashboard = () => {
     <div
       className={cn(
         "transition-all duration-200 ease-in-out",
-        "lg:ml-64 min-h-screen"
+        "lg:ml-64 min-h-screen p-5 md:p-10"
       )}
     >
-      <div className="p-4 md:p-8">
+      <div>
         {/* Header */}
        <Header title="Dashboard Overview" description="Welcome back! Here's your practice at a glance." /> 
 

@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import { HelpCenter } from "./HelpCenter";
 import { UserMenu } from "@/app/_components/UserMenu";

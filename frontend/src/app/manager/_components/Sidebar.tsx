@@ -10,30 +10,45 @@ import {
   Menu,
   Settings,
   X,
+  User2
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+  const routes = [
+    { label: "Dashboard", path: "/manager/dashboard", icon: LayoutDashboard },
+    { label: "Appointments", path: "/manager/appointments", icon: Calendar },
+    { label: "Profile", path: "/manager/profile", icon: User2 },
+    { label: "Settings", path: "/manager/settings", icon: Settings },
+  ];
+
   const SidebarLink = ({
     icon: Icon,
     label,
     active = false,
+    path,
   }: {
     icon: LucideIcon;
     label: string;
     active?: boolean;
+    path: string;
   }) => (
-    <Button
-      variant="ghost"
-      className={cn(
-        "w-full justify-start gap-2",
-        active && "bg-primary/10 text-primary"
-      )}
-    >
-      <Icon className="h-4 w-4" />
-      <span>{label}</span>
-    </Button>
+    <Link href={path}>
+      <Button
+        variant="ghost"
+        className={cn(
+          "w-full justify-start gap-2",
+          active && "bg-primary/10 text-primary"
+        )}
+      >
+        <Icon className="h-4 w-4" />
+        <span>{label}</span>
+      </Button>
+    </Link>
   );
 
   return (
@@ -60,10 +75,16 @@ const Sidebar = () => {
       >
         <div className="p-4">
           <Logo className=" ms-10 mt-1 mb-8" />
-          <nav className="space-y-2">
-            <SidebarLink icon={LayoutDashboard} label="Dashboard" active />
-            <SidebarLink icon={Calendar} label="Appointments" />
-            <SidebarLink icon={Settings} label="Settings" />
+          <nav className="flex flex-col gap-y-3">
+            {routes.map((route) => (
+              <SidebarLink
+                key={route.label}
+                icon={route.icon}
+                label={route.label}
+                path={route.path}
+                active={pathname == route.path}
+              />
+            ))}
           </nav>
         </div>
       </div>
