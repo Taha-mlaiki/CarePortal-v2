@@ -6,6 +6,7 @@ import { DataTable } from "../_components/data-table";
 import { columns } from "./_components/columns";
 import { cn } from "@/lib/utils";
 import Header from "../_components/Header";
+import { DayOffCheckbox } from "./_components/DayOffCheckbox";
 // import { DayOffCheckbox } from "./_components/DayOffCheckbox";
 
 const page = async () => {
@@ -58,19 +59,16 @@ const page = async () => {
         title="Manage Appointments"
         description="Manage your appointments with ease."
       />
-      <div className="flex justify-end mt-16 items-center">
+      <div className="mt-10 mb-16">
+        <div className="flex items-center justify-between">
+          <DayOffCheckbox />
         <Link href={`/cabinets/appointments/new`}>
           <Button size="sm" variant="brand" className="gap-x-1">
             <Plus className="font-bold w-6 h-6" />
             New appointment
           </Button>
         </Link>
-      </div>
-      <div className="mt-10 mb-16">
-        {/* <DayOffCheckbox
-          todayOff={cabinet?.todayOff!}
-          cabinetId={params.cabinetId}
-        /> */}
+        </div>
         <DataTable columns={columns} data={data} />
       </div>
     </div>
