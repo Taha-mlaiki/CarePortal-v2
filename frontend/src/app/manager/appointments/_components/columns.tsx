@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Calendar, Check, Hourglass, Phone, X } from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns/format";
+import { Badge } from "@/components/ui/badge";
 // import {
 //   DropdownMenu,
 //   DropdownMenuContent,
@@ -14,6 +15,7 @@ import { format } from "date-fns/format";
 // import { usePatientDetails } from "@/hooks/use-patient-details";
 // import { useCancelAppoint } from "@/hooks/use-cancel-appoint";
 // import { toast } from "sonner";
+
 
 type Appointment = {
   patient_name: string;
@@ -71,8 +73,8 @@ export const columns: ColumnDef<Appointment>[] = [
     accessorKey: "Date",
     header: () => (
       <div className="flex items-center justify-center">
-        <Calendar className="mr-2 w-4 h-4" />
-         Date
+        <Calendar className="mr-2 w-3 h-3" />
+        Date
       </div>
     ),
     cell: ({ row }) => {
@@ -89,29 +91,36 @@ export const columns: ColumnDef<Appointment>[] = [
     header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
       const data = row.original;
-      switch (data.status) {
-        case "Pending":
-          return (
-            <div className="flex w-fit px-2 py-0.5 mx-auto items-center text-blue-500 bg-blue-500/40 gap-x-0.5 rounded-xl">
-              <Hourglass className="w-4 h-4" />
-              Pending
-            </div>
-          );
-        case "Scheduled":
-          return (
-            <div className="flex w-fit px-2 py-0.5 mx-auto items-center text-green-600 bg-green-600/40 gap-x-0.5 rounded-xl">
-              <Check className="w-4 h-4 " />
-              Scheduled
-            </div>
-          );
-        case "Cancelled":
-          return (
-            <div className="flex w-fit px-2 py-0.5 mx-auto items-center text-red-600 bg-red-600/40 gap-x-0.5 rounded-xl">
-              <X className="w-4 h-4 " />
-              Cancelled
-            </div>
-          );
+      const status = ()=> { 
+        switch (data.status) {
+          case "Pending":
+            return (
+              <Badge variant="outline" className="bg-yellow-100 gap-x-1  text-yellow-800">
+                <Hourglass className="w-3 h-3" />
+                Pending
+              </Badge>
+            );
+          case "Scheduled":
+            return (
+              <Badge variant="outline" className="bg-green-100 gap-x-1 text-green-800">
+                <Check className="w-3 h-3 " />
+                Scheduled
+              </Badge>
+            );
+          case "Cancelled":
+            return (
+              <Badge variant="outline" className="bg-red-100 gap-x-1 text-red-800">
+                <X className="w-3 h-3 " />
+                Cancelled
+              </Badge>
+            );
+        }
       }
+      return (
+      <div className="flex justify-center">
+        {status()}
+      </div>
+      )
     },
   },
   {
@@ -119,26 +128,23 @@ export const columns: ColumnDef<Appointment>[] = [
     header: () => <div className="text-center">Ticket order</div>,
     cell: ({ row }) => {
       const data = row.original;
-      if(data.ticket === 0 ){
+      if (data.ticket === 0) {
+        return <p className="text-neutral-600 text-center">No ticket</p>;
+      } else {
         return (
-          <p className="text-neutral-600 text-center">No ticket</p> 
-        )
-      }else {
-        return <div className="font-bold text-xl text-center">
-            {data.ticket}
-        </div>
+          <div className="font-bold text-xl text-center">{data.ticket}</div>
+        );
       }
-    }
+    },
   },
   {
     header: "Actions",
     cell: () => {
-
       // const RenderCell = ()=>{
       //   const data = row.original;
       //   const usePatient = usePatientDetails((state) => state);
       //   const useCancelApp = useCancelAppoint((state)=> state)
-  
+
       //   const onArchived = async ()=>{
       //     const res = await archiveAppointment(data.id)
       //      if(res.success){
@@ -148,7 +154,7 @@ export const columns: ColumnDef<Appointment>[] = [
       //       toast.error(res.error)
       //      }
       //   }
-  
+
       //   const onSchedule = async ()=>{
       //       const res = await scheduleApp(data.id)
       //       if(res.success){
@@ -157,7 +163,7 @@ export const columns: ColumnDef<Appointment>[] = [
       //         toast.error(res.error)
       //       }
       //   }
-  
+
       //   const complete = async ()=>{
       //     const res = await onComplete(data.id)
       //     if(res.success){
@@ -192,12 +198,12 @@ export const columns: ColumnDef<Appointment>[] = [
       //               <p className="text-green-500">Schedule</p>
       //           </DropdownMenuItem>
       //         )}
-      //         {data.status === "Cancelled" ? 
+      //         {data.status === "Cancelled" ?
       //               (
       //               <DropdownMenuItem onClick={()=> onArchived()}>
       //                     <div className="text-red-500 w-full flex items-center justify-between">
       //                       <p>Archived</p>
-      //                       <ArchiveX className="w-4 h-4" />
+      //                       <ArchiveX className="w-3 h-3" />
       //                     </div>
       //                 </DropdownMenuItem>
       //               )
@@ -214,9 +220,7 @@ export const columns: ColumnDef<Appointment>[] = [
 
       // }
 
-      return <div>
-          actions
-        </div>
+      return <div>actions</div>;
     },
   },
 ];
