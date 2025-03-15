@@ -162,6 +162,8 @@ export default function CabinetSettings() {
                   <div className="flex items-center gap-4">
                     {thumbnailImage ? (
                       <Image
+                        width={64}
+                        height={64}
                         src={thumbnailImage.preview}
                         alt="Thumbnail"
                         className="w-16 h-16 rounded-full object-cover"
@@ -215,6 +217,8 @@ export default function CabinetSettings() {
                       Cabinet thumbnail
                     </h3>
                     <Image
+                      height={128}
+                      width={300}
                       src={thumbnailImage.preview}
                       alt="thumbnail Image"
                       className=" h-32 aspect-video object-cover rounded-lg shadow-sm"
@@ -229,6 +233,8 @@ export default function CabinetSettings() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {cabinetImages.map((img) => (
                         <Image
+                          width={128}
+                          height={128}
                           key={img.id}
                           src={img.preview}
                           alt="Cabinet"
@@ -375,6 +381,8 @@ export default function CabinetSettings() {
                         {thumbnailImage ? (
                           <div className="relative">
                             <Image
+                              width={96}
+                              height={96}
                               src={thumbnailImage.preview}
                               alt="Thumbnail"
                               className="aspect-video h-24 rounded-lg object-cover"
@@ -407,6 +415,8 @@ export default function CabinetSettings() {
                         {cabinetImages.map((img) => (
                           <div key={img.id} className="relative">
                             <Image
+                            width={96}
+                            height={96}
                               src={img.preview}
                               alt="Cabinet"
                               className="w-full h-24 object-cover rounded-lg shadow-sm"

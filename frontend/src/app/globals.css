@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* @layer utilities {
+@layer utilities {
   .customInput {
     @apply border-none disabled:text-black/90 focus-visible:ring-0 placeholder:text-gray-400 focus-visible:ring-offset-0 !important;
   }
   .input-phone {
     @apply rounded-md px-3 text-sm focus:border-none  !important;
   }
-} */
+}
 
 @layer base {
   :root {
