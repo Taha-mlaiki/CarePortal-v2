@@ -13,8 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
+  import "react-phone-number-input/style.css";
+  import PhoneInput from "react-phone-number-input";
 import {
   Select,
   SelectContent,
