@@ -251,137 +251,131 @@ export default function CabinetsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-7xl  sm:px-6 lg:px-8">
-        <div className=" max-w-7xl h-20 mb-20 w-full mx-auto flex items-center justify-between">
-          <Logo />
-          <UserMenu />
-        </div>
-        {/* Header */}
-        <div className="mb-8 ">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Medical Cabinets 
-          </h1>
-          <p className="mt-2 text-lg text-gray-600">
-            Find the perfect medical cabinet for your healthcare needs
-          </p>
-        </div>
+    <div>
+      {/* Header */}
+      <div className="mb-8 ">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          Medical Cabinets
+        </h1>
+        <p className="mt-2 text-lg text-gray-600">
+          Find the perfect medical cabinet for your healthcare needs
+        </p>
+      </div>
 
-        {/* Filters */}
-        <div className="mb-10 rounded-2xl bg-white p-6 shadow-md">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Search by Name or Address
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search cabinets..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border-gray-300 pl-10 focus:border-brand focus:ring-brand"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Filter by Specialty
-              </label>
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Select value={specialty} onValueChange={setSpecialty}>
-                  <SelectTrigger className="border-gray-300 pl-10 focus:border-brand focus:ring-brand">
-                    <SelectValue placeholder="Select specialty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Specialties</SelectItem>
-                    {SPECIALTIES.map((spec) => (
-                      <SelectItem key={spec} value={spec}>
-                        {spec}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="flex items-end lg:justify-end">
-              <p className="text-sm text-gray-600">
-                Showing{" "}
-                <span className="font-medium text-gray-900">
-                  {filteredCabinets.length}
-                </span>{" "}
-                cabinets
-              </p>
+      {/* Filters */}
+      <div className="mb-10 rounded-2xl bg-white p-6 shadow-md">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Search by Name or Address
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search cabinets..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border-gray-300 pl-10 focus:border-brand focus:ring-brand"
+              />
             </div>
           </div>
-        </div>
 
-        {/* Cabinet Cards */}
-        {filteredCabinets.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {paginatedCabinets.map((cabinet) => (
-              <CabinetCard key={cabinet.id} cabinet={cabinet} />
-            ))}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Filter by Specialty
+            </label>
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Select value={specialty} onValueChange={setSpecialty}>
+                <SelectTrigger className="border-gray-300 pl-10 focus:border-brand focus:ring-brand">
+                  <SelectValue placeholder="Select specialty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Specialties</SelectItem>
+                  {SPECIALTIES.map((spec) => (
+                    <SelectItem key={spec} value={spec}>
+                      {spec}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        ) : (
-          <div className="rounded-xl bg-white p-12 text-center shadow">
-            <h3 className="text-xl font-medium text-gray-900">
-              No cabinets found
-            </h3>
-            <p className="mt-2 text-gray-600">
-              Try adjusting your search or filter criteria
+
+          <div className="flex items-end lg:justify-end">
+            <p className="text-sm text-gray-600">
+              Showing{" "}
+              <span className="font-medium text-gray-900">
+                {filteredCabinets.length}
+              </span>{" "}
+              cabinets
             </p>
           </div>
-        )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-10 flex items-center justify-center">
-            <div className="inline-flex items-center gap-1 rounded-lg bg-white p-1.5 shadow">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 disabled:text-gray-400"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-
-              {pageNumbers.map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "ghost"}
-                  onClick={() => setCurrentPage(page)}
-                  className={
-                    currentPage === page
-                      ? "bg-brand text-white hover:bg-brand/90"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                  }
-                >
-                  {page}
-                </Button>
-              ))}
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 disabled:text-gray-400"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
+
+      {/* Cabinet Cards */}
+      {filteredCabinets.length > 0 ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {paginatedCabinets.map((cabinet) => (
+            <CabinetCard key={cabinet.id} cabinet={cabinet} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl bg-white p-12 text-center shadow">
+          <h3 className="text-xl font-medium text-gray-900">
+            No cabinets found
+          </h3>
+          <p className="mt-2 text-gray-600">
+            Try adjusting your search or filter criteria
+          </p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-10 flex items-center justify-center">
+          <div className="inline-flex items-center gap-1 rounded-lg bg-white p-1.5 shadow">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 disabled:text-gray-400"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+
+            {pageNumbers.map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "ghost"}
+                onClick={() => setCurrentPage(page)}
+                className={
+                  currentPage === page
+                    ? "bg-brand text-white hover:bg-brand/90"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                }
+              >
+                {page}
+              </Button>
+            ))}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 disabled:text-gray-400"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
