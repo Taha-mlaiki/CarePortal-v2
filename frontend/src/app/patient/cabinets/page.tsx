@@ -5,11 +5,7 @@ import {
   Search,
   Filter,
   ChevronLeft,
-  ChevronRight,
-  Calendar,
-  MapPin,
-  Users,
-  ArrowRight,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,16 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { Logo } from "@/components/Logo";
-import { UserMenu } from "@/app/_components/UserMenu";
+import { CabinetCard } from "./_components/CabinetCard";
 
-// Default thumbnail
-const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
+
 
 // Dummy data for cabinets
-const CABINETS_DATA = [
+export const CABINETS_DATA = [
   {
     id: 1,
     name: "Wellness Central",
@@ -145,71 +137,13 @@ const SPECIALTIES = Array.from(
   new Set(CABINETS_DATA.map((cabinet) => cabinet.specialty))
 );
 
-// Cabinet card component
-const CabinetCard = ({ cabinet }: { cabinet: (typeof CABINETS_DATA)[0] }) => {
-  return (
-    <div className="group relative overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-60 transition-opacity group-hover:opacity-70"></div>
-
-      <div className="relative flex h-full flex-col">
-        {/* Thumbnail */}
-        <div className="relative h-48 overflow-hidden">
-          <img
-            src={cabinet.thumbnail || DEFAULT_THUMBNAIL}
-            alt={cabinet.name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-          <Badge className="absolute left-3 top-3 bg-brand text-white shadow-md">
-            {cabinet.specialty}
-          </Badge>
-        </div>
-
-        {/* Content */}
-        <div className="relative flex flex-1 flex-col justify-between p-5">
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold text-white">{cabinet.name}</h3>
-            <div className="flex items-start gap-2 text-sm text-white/90">
-              <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
-              <span>{cabinet.address}</span>
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-lg bg-white/10 p-2 backdrop-blur-sm">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-white/90">
-                <Calendar className="h-3.5 w-3.5" />
-                <span>Established</span>
-              </div>
-              <p className="mt-1 text-sm font-semibold text-white">
-                {format(cabinet.dateStarted, "MMM yyyy")}
-              </p>
-            </div>
-            <div className="rounded-lg bg-white/10 p-2 backdrop-blur-sm">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-white/90">
-                <Users className="h-3.5 w-3.5" />
-                <span>Appointments</span>
-              </div>
-              <p className="mt-1 text-sm font-semibold text-white">
-                {cabinet.totalAppointments.toLocaleString()}
-              </p>
-            </div>
-          </div>
-
-          <Button className="mt-4 w-full gap-1 bg-white/20 backdrop-blur-sm hover:bg-white/30">
-            View Details
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export default function CabinetsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [specialty, setSpecialty] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredCabinets, setFilteredCabinets] = useState(CABINETS_DATA);
+
+ 
 
   const itemsPerPage = 6;
 
@@ -335,7 +269,7 @@ export default function CabinetsPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-10 flex items-center justify-center">
+        <div className="py-14 flex items-center justify-center">
           <div className="inline-flex items-center gap-1 rounded-lg bg-white p-1.5 shadow">
             <Button
               variant="ghost"

@@ -41,7 +41,7 @@ export const UserMenu = () => {
         </DropdownMenuItem>
         <Separator className="my-0.5" />
         <DropdownMenuItem >
-          <Link href="/patient/favorites" className="flex items-center gap-x-2">
+          <Link href="/patient/cabinets/favorites" className="flex items-center gap-x-2">
           <HeartIcon className="w-4 h-4" />
             Favorites
           </Link>
