@@ -81,8 +81,8 @@ const Page = () => {
   return (
     <div className="lg:ml-64 min-h-screen p-5 md:p-10">
       <Header
-        title="Manage Your Cabinet Settings"
-        description="Update your personal and professional settings"
+        title="Manage Your Cabinet"
+        description="Update your Cabinet  settings"
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

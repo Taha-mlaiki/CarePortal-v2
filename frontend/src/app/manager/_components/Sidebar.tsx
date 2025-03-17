@@ -8,9 +8,9 @@ import {
   LayoutDashboard,
   LucideIcon,
   Menu,
-  Settings,
   X,
-  User2
+  CalendarCog,
+  Info,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,8 +22,8 @@ const Sidebar = () => {
   const routes = [
     { label: "Dashboard", path: "/manager/dashboard", icon: LayoutDashboard },
     { label: "Appointments", path: "/manager/appointments", icon: Calendar },
-    { label: "Profile", path: "/manager/profile", icon: User2 },
-    { label: "Settings", path: "/manager/settings", icon: Settings },
+    { label: "Cabinet", path: "/manager/cabinet-info", icon: Info },
+    { label: "Dates", path: "/manager/dates-info", icon: CalendarCog },
   ];
 
   const SidebarLink = ({

@@ -142,8 +142,8 @@ export default function CabinetSettings() {
   return (
     <div className="lg:ml-64 min-h-screen p-5 md:p-10">
       <Header
-        title="Manage Your Cabinet Profile"
-        description="Update your personal and professional information"
+        title="Manage Your Cabinet "
+        description="Update your personal and Cabinets information"
       />
       <div className="w-full mx-auto max-w-4xl">
         <Card className="bg-white/90 backdrop-blur-md shadow-xl border border-gray-100">
