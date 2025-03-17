@@ -14,9 +14,17 @@ import PersonalInfoForm from "./_components/PersonalInfoForm";
 
 // Zod schema with updated validation
 const cabinetSchema = z.object({
-  username: z
+  name: z
     .string()
-    .min(2, "Username must be at least 2 characters")
+    .min(5, "Name must be at least 5 characters")
+    .nonempty("Username is required"),
+  description: z
+    .string()
+    .min(50, "description must be at least 50 characters")
+    .nonempty("Username is required"),
+  doctor_name: z
+    .string()
+    .min(5, "Name must be at least 5 characters")
     .nonempty("Username is required"),
   email: z
     .string()
@@ -26,16 +34,12 @@ const cabinetSchema = z.object({
     .string()
     .min(10, "Phone number must be at least 10 digits")
     .nonempty("Phone number is required"),
-  contactEmail: z
+  speciality: z
     .string()
-    .email("Invalid contact email address")
-    .nonempty("Contact email is required"),
-  specialty: z
-    .string()
-    .min(1, "Specialty is required")
+    .min(1, "Speciality is required")
     .nonempty("Specialty is required"),
   city: z.string().min(1, "City is required").nonempty("City is required"),
-  locationLink: z
+  location_link: z
     .string()
     .url("Must be a valid URL")
     .nonempty("Location link is required"),
@@ -43,10 +47,8 @@ const cabinetSchema = z.object({
     .string()
     .min(5, "Address must be at least 5 characters")
     .nonempty("Address is required"),
-  cabinetImages: z
-    .array(z.any())
-    .min(2, "At least 2 cabinet images are required"),
-  thumbnailImage: z
+  images: z.array(z.any()).min(2, "At least 2 cabinet images are required"),
+  thumbnail: z
     .any()
     .refine((val) => val !== null, "Thumbnail image is required"),
 });
@@ -62,16 +64,17 @@ export default function CabinetPage() {
   const form = useForm<CabinetFormValues>({
     resolver: zodResolver(cabinetSchema),
     defaultValues: {
-      username: "",
+      name: "",
       email: "",
       phone: "",
-      contactEmail: "",
-      specialty: "",
+      doctor_name: "",
+      speciality: "",
       city: "",
-      locationLink: "",
+      description: "",
+      location_link: "",
       address: "",
-      cabinetImages: [],
-      thumbnailImage: null,
+      images: [],
+      thumbnail: null,
     },
   });
 
@@ -100,8 +103,8 @@ export default function CabinetPage() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs defaultValue="personal" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                <TabsTrigger value="images">Images</TabsTrigger>
+                <TabsTrigger value="personal">Cabinet Info</TabsTrigger>
+                <TabsTrigger value="images">Cabinet Images</TabsTrigger>
               </TabsList>
 
               <TabsContent value="personal" className="space-y-4">
