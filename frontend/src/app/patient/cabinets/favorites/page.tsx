@@ -122,7 +122,7 @@ export default function FavoritesPage() {
               className="inline-flex mb-3 items-center gap-2 text-sm font-medium text-[#3b82f6] hover:text-[#3b82f6]/80"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Directory
+              Back to Cabinets
             </Link>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               My Favorite Cabinets
