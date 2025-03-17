@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/select";
 import CommentsSection, { Comment } from "../_components/CommentSection";
 import FavoriteButton from "../_components/FavoritesBtn";
+import Image from "next/image";
 
 // Default thumbnail
 const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
@@ -350,10 +351,11 @@ export default function CabinetDetailsPage() {
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
         {/* Image gallery - takes up 2 columns on large screens */}
         <div className="lg:col-span-2">
-          <div className="overflow-hidden rounded-xl bg-white shadow">
+          <div className="overflow-hidden relative rounded-xl bg-white shadow">
             {/* Main selected image */}
-            <div className="aspect-video overflow-hidden">
-              <img
+            <div className="aspect-video  overflow-hidden">
+              <Image
+                fill
                 src={selectedImage || DEFAULT_THUMBNAIL}
                 alt={cabinet.name}
                 className="h-full w-full object-cover"
@@ -365,15 +367,17 @@ export default function CabinetDetailsPage() {
               {cabinet.images.map((image, index) => (
                 <div
                   key={index}
-                  className={`cursor-pointer overflow-hidden rounded-md border-2 transition-all ${
+                  className={`cursor-pointer relative overflow-hidden rounded-md border-2 transition-all ${
                     selectedImage === image
                       ? "border-[#3b82f6]"
                       : "border-transparent hover:border-gray-300"
                   }`}
                   onClick={() => setSelectedImage(image)}
                 >
-                  <img
-                    src={image || "/placeholder.svg"}
+                  <Image
+                    width={100}
+                    height={100}
+                    src="/cabinetPlacholder.svg"
                     alt={`${cabinet.name} - Image ${index + 1}`}
                     className="aspect-video h-full w-full object-cover"
                   />

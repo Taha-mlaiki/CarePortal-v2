@@ -82,15 +82,11 @@ const AppointmentStatusPage = () => {
   return (
     <div className=" space-y-8">
       {/* Header */}
-      <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
+      <div>
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
           <p className="text-gray-500">Manage and track your appointments</p>
         </div>
-        <Button variant="brand" className="w-full md:w-auto">
-          <Calendar className="w-4 h-4 mr-2" />
-          New Appointment
-        </Button>
       </div>
 
       {/* Filters */}

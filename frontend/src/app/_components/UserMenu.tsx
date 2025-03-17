@@ -1,6 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { HeartIcon, LogOut, Store } from "lucide-react";
+import { HeartIcon, LayoutDashboard, LogOut, Store } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 import {
@@ -40,16 +40,27 @@ export const UserMenu = () => {
           <ProfileModal />
         </DropdownMenuItem>
         <Separator className="my-0.5" />
-        <DropdownMenuItem >
-          <Link href="/patient/cabinets/favorites" className="flex items-center gap-x-2">
-          <HeartIcon className="w-4 h-4" />
-            Favorites
+        <DropdownMenuItem>
+          <Link href="/patient/dashboard" className="flex items-center gap-x-2">
+            <LayoutDashboard className="w-4 h-4" />
+            Dashboard
           </Link>
         </DropdownMenuItem>
         <Separator className="my-0.5" />
-        <DropdownMenuItem >
+        <DropdownMenuItem>
+          <Link
+            href="/patient/cabinets/favorites"
+            className="flex items-center gap-x-2"
+          >
+            <HeartIcon className="w-4 h-4" />
+            Favorites
+          </Link>
+        </DropdownMenuItem>
+
+        <Separator className="my-0.5" />
+        <DropdownMenuItem>
           <Link href="/patient/cabinets" className="flex items-center gap-x-2">
-          <Store className="w-4 h-4" />
+            <Store className="w-4 h-4" />
             Cabinets
           </Link>
         </DropdownMenuItem>
