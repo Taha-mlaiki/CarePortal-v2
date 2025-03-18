@@ -9,6 +9,9 @@
   .input-phone {
     @apply rounded-md px-3 text-sm focus:border-none  !important;
   }
+  .container {
+    @apply max-w-7xl mx-auto px-5 md:px-10
+  }
 }
 
 @layer base {

@@ -223,7 +223,7 @@ export default function CabinetSettings() {
                         {mockCabinetData.speciality} • {mockCabinetData.city}{" "}
                       </p>
                       <p className="text-gray-700 font-medium">
-                        {mockCabinetData.name} 
+                        {mockCabinetData.name}
                       </p>
                     </div>
                   </div>
@@ -554,7 +554,11 @@ export default function CabinetSettings() {
                     >
                       Cancel
                     </Button>
-                    <Button variant="brand" type="submit" disabled={isSubmitting}>
+                    <Button
+                      variant="brand"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
                       {isSubmitting ? "Saving..." : "Save Changes"}
                     </Button>
                   </div>

@@ -24,7 +24,7 @@ export default function AuthPage() {
       >
         <Card className="bg-white/90 backdrop-blur-md min-h-[80vh] shadow-xl border border-gray-100 overflow-hidden grid md:grid-cols-2">
           {/* Left Side: Login/Register Forms */}
-          <div className="p-6 md:p-8">
+          <div className="p-6 md:p-8 order-2 md:order-1">
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger
@@ -74,7 +74,7 @@ export default function AuthPage() {
           </div>
 
           {/* Right Side: Image and Text */}
-          <div className="relative w-full h-full min-h-[50vh] md:min-h-0 overflow-hidden">
+          <div className="relative w-full h-full min-h-[50vh] md:min-h-0 overflow-hidden order-1 md:order-2">
             <div className="absolute inset-0 bg-black/40 z-10" />
             <Image
               alt="Healthcare professional"

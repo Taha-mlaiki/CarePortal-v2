@@ -55,7 +55,7 @@ export function RegisterForm() {
     <div className="w-full">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="grid md:grid-cols-2 gap-3">
             <FormField
               control={form.control}
               name="username"
