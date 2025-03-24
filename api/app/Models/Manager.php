@@ -7,7 +7,12 @@ class Manager extends User
 {
     protected $table = "managers";
     protected $fillable = [
-        "qualifications"
+        'username',
+        'email',
+        'phone',
+        'image',
+        'password',
+        'role_id',
+        'qualifications',
     ];
-    
 }
