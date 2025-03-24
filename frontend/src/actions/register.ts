@@ -7,19 +7,25 @@ export const registerAction = async ({
   email,
   password,
   role,
-  name,
+  username,
+  phone_number,
+  qualifications,
 }: {
-  name: string;
+  username: string;
   email: string;
+  phone_number: string;
   password: string;
-  role: "user" | "admin";
+  role: "patient" | "manager";
+  qualifications?: string;
 }) => {
   try {
     const res = await axios.post("/register", {
-      name,
+      username,
       email,
       password,
+      phone_number,
       role,
+      qualifications,
     });
     const cookieStore = await cookies();
     if (res.data.token) {
@@ -28,9 +34,9 @@ export const registerAction = async ({
         value: res.data.token,
         httpOnly: true,
         path: "/",
-        maxAge: 60 * 2
+        maxAge: 60 * 2,
       });
-      return { success: "register successfully" };
+      return { success: res.data.success, role: res.data.role };
     }
   } catch (error) {
     return { error };

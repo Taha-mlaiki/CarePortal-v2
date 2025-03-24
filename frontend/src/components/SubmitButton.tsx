@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react"
-import { Button, ButtonProps } from "./ui/button"
+import { Button } from "./ui/button"
 
 interface SubmitButtonProps {
     children:React.ReactNode,

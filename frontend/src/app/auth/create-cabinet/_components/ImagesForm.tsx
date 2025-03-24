@@ -36,7 +36,7 @@ export default function ImagesForm({
         id: crypto.randomUUID(),
       }));
       setCabinetImages((prev) => [...prev, ...newImages]);
-      form.setValue("cabinetImages", [...cabinetImages, ...newImages]);
+      form.setValue("images", [...cabinetImages, ...newImages]);
     }
   };
 
@@ -45,19 +45,19 @@ export default function ImagesForm({
       const file = e.target.files[0];
       const newThumbnail = { file, preview: URL.createObjectURL(file), id: crypto.randomUUID() };
       setThumbnailImage(newThumbnail);
-      form.setValue("thumbnailImage", newThumbnail);
+      form.setValue("thumbnail", newThumbnail);
     }
   };
 
   const removeCabinetImage = (id: string) => {
     const updatedImages = cabinetImages.filter((img) => img.id !== id);
     setCabinetImages(updatedImages);
-    form.setValue("cabinetImages", updatedImages);
+    form.setValue("images", updatedImages);
   };
 
   const removeThumbnailImage = () => {
     setThumbnailImage(null);
-    form.setValue("thumbnailImage", null);
+    form.setValue("thumbnail", null);
   };
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function ImagesForm({
     <Form {...form}>
       <FormField
         control={form.control}
-        name="thumbnailImage"
+        name="thumbnail"
         render={() => (
           <FormItem>
             <FormLabel>Thumbnail Image (Required)</FormLabel>
@@ -112,7 +112,7 @@ export default function ImagesForm({
       />
       <FormField
         control={form.control}
-        name="cabinetImages"
+        name="images"
         render={() => (
           <FormItem>
             <FormLabel>Cabinet Images (Minimum 2)</FormLabel>

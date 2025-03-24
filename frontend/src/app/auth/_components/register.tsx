@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,8 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-  import "react-phone-number-input/style.css";
-  import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 import {
   Select,
   SelectContent,
@@ -22,22 +21,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { registerAction } from "@/actions/register";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { SubmitButton } from "@/components/SubmitButton";
 
-const FormSchema = z.object({
-  username: z.string().min(4).max(50),
-  email: z.string().email({
-    message: "Email is invalid",
-  }),
-  role: z.enum(["patient", "manager"]),
-  password: z.string().min(6),
-  phone_number: z
-    .string()
-    .regex(/^(\+?\d{1,3}\s?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4})$/, {
-      message: "Phone number is invalid",
+const FormSchema = z
+  .object({
+    username: z.string().min(4).max(50),
+    email: z.string().email({
+      message: "Email is invalid",
     }),
-});
+    role: z.enum(["patient", "manager"]),
+    qualifications: z.string().optional(),
+    password: z.string().min(6),
+    phone_number: z
+      .string()
+      .regex(/^(\+?\d{1,3}\s?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4})$/, {
+        message: "Phone number is invalid",
+      }),
+  })
+  .refine(
+    (data) => {
+      if (data.role === "manager") {
+        return data.qualifications !== "" && data.qualifications !== undefined;
+      }
+      return true;
+    },
+    {
+      message: "qualifications  is required as a manager",
+      path: ["qualifications"],
+    }
+  );
 
 export function RegisterForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -47,9 +65,25 @@ export function RegisterForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
+  const { isSubmitting:isLoading } = form.formState;
+
+  const selectedRole = form.watch("role");
+
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      const res = await registerAction(data);
+      if (res?.success) {
+        toast.success(res.success);
+        if (res?.role === "patient") {
+          router.push("/patient/dashboard");
+        } else if (res?.role === "manager") {
+          router.push("/auth/create-cabinet");
+        }
+      }
+    } catch (error) {
+      console.error("Axios error:", error);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -116,6 +150,21 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
+          {selectedRole == "manager" && (
+            <FormField
+              control={form.control}
+              name="qualifications"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Qualifications</FormLabel>
+                  <FormControl>
+                    <Input placeholder="qualifications" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="email"
@@ -142,9 +191,9 @@ export function RegisterForm() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full" variant="brand">
+          <SubmitButton className="w-full" loading={isLoading} variant="brand">
             Submit
-          </Button>
+          </SubmitButton>
         </form>
       </Form>
     </div>
