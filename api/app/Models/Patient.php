@@ -14,4 +14,8 @@ class Patient extends User
         'password',
         'role_id',
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
