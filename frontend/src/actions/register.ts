@@ -18,7 +18,7 @@ export const registerAction = async ({
   role: "patient" | "manager";
   qualifications?: string;
 }) => {
-  try {
+ 
     const res = await axios.post("/register", {
       username,
       email,
@@ -36,9 +36,12 @@ export const registerAction = async ({
         path: "/",
         maxAge: 60 * 2,
       });
-      return { success: res.data.success, role: res.data.role };
+      return {
+        success: res.data.success,
+        role: res.data.role,
+      };
     }
-  } catch (error) {
-    return { error };
-  }
+    if(res.data.errors){
+      throw new Error("All fields are required I think you skipped a input :(")
+    }
 };

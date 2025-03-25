@@ -22,11 +22,16 @@ export const loginAction = async ({
         value: res.data.token,
         httpOnly: true,
         path: "/",
-        maxAge: 60 * 20,
+        maxAge: 60 * 20, // 20 minutes
       });
-      return { success: "login successfully" };
+      return {
+        success: "Logged in successfully",
+        warning: res.data.warning || null,
+        redirect: res.data.redirect || "/dashboard", // Default redirect
+      };
     }
+    return { error: "No token received" };
   } catch (error) {
-    return {error};
+    return { error };
   }
 };

@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,6 +12,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { loginAction } from "@/actions/login";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { SubmitButton } from "@/components/SubmitButton";
 
 const FormSchema = z.object({
   email: z.string().email({
@@ -22,6 +25,7 @@ const FormSchema = z.object({
 });
 
 export function LoginForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -30,17 +34,32 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
+  const { isSubmitting: isLoading } = form.formState;
+
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      const res = await loginAction(data);
+      if (res?.success) {
+        if (res?.warning !== null) {
+          toast.warning(res.warning);
+          setTimeout(() => {
+            router.push(res.redirect);
+          }, 2500);
+        }else {
+          toast.success(res.success);
+          router.push(res.redirect);
+        }
+      }
+    } catch (error) {
+      console.error("Axios error:", error);
+      toast.error("An unexpected error occurred");
+    }
+  };
 
   return (
     <div className="w-full">
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="email"
@@ -67,10 +86,9 @@ export function LoginForm() {
               </FormItem>
             )}
           />
-          <Button type="submit"
-          className="w-full"
-          variant="brand"
-          >Submit</Button>
+          <SubmitButton className="w-full" loading={isLoading} variant="brand">
+            Submit
+          </SubmitButton>
         </form>
       </Form>
     </div>
