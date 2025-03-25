@@ -15,4 +15,9 @@ class Manager extends User
         'role_id',
         'qualifications',
     ];
+
+    public function cabinet()
+    {
+        return $this->hasOne(Cabinet::class);
+    }
 }
