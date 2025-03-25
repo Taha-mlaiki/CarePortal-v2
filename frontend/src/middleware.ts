@@ -2,21 +2,22 @@ import { NextResponse, NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
 interface jwtPayload {
   exp: number;
-  role: "user" | "admin";
+  role: {
+    name: "patient" | "manager"
+  };
 }
 export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-  const token = request.cookies.get("token")?.value as string | undefined;
-  if (!token && pathname !== "/auth/login" && pathname !== "/auth/login" ) {
-    return 
-  }
-  if(token as string){
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get("token")?.value as string | null;
+
+  if (token && pathname == "/auth") {
     const decoded = jwtDecode<jwtPayload>(token as string);
-    if(decoded.role == "user" && pathname.startsWith("/admin")){
-      return NextResponse.redirect(new URL("/unauthorized",request.url))
-    }
-    if(decoded.role == "admin" &&  pathname.startsWith("/user")){
-      return NextResponse.redirect(new URL("/unauthorized",request.url))
+    const role = decoded.role.name;
+    console.log(role);
+    if (role == "patient") {
+      return NextResponse.redirect(new URL("/patient/dashboard", request.url));
+    } else if (role == "manager") {
+      return NextResponse.redirect(new URL("/manager/dashboard", request.url));
     }
   }
 }
