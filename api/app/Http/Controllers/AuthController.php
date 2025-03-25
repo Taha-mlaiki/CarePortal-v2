@@ -6,6 +6,7 @@ use App\Models\Manager;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -38,7 +39,7 @@ class AuthController extends Controller
             $data = [
                 'username' => $request->username,
                 'email' => $request->email,
-                'phone' => $request->phone_number, 
+                'phone' => $request->phone_number,
                 'password' => Hash::make($request->password),
                 'role_id' => $role->id,
             ];
@@ -75,10 +76,32 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
-        return response()->json(['token' => $token]);
+        $user = User::where("email", $credentials["email"])->first();
+
+        $responseData = [
+            "token" => $token,
+        ];
+        if ($user->role->name === 'manager') {
+            // Check if the manager has a cabinet
+            $manager = Manager::where('id', $user->id)->first();
+            if ($manager) {
+                // Assuming a relationship between Manager and Cabinet
+                $cabinet = $manager->cabinet; // Define this relationship in the Manager model
+                if (!$cabinet) {
+                    $responseData['redirect'] = '/auth/create-cabinet';
+                    $responseData['warning'] = 'Manager has no cabinet, please create one';
+                }
+            } else {
+                return response()->json(['error' => 'Manager record not found'], 500);
+            }
+        }else {
+            $responseData['redirect'] = '/patient/dashboard';
+        }
+
+        return response()->json($responseData, 200);
     }
 
     public function user(Request $req)
