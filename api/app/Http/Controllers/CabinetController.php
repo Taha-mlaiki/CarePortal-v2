@@ -18,9 +18,31 @@ class CabinetController extends Controller
         $this->fileManager = $fileManager;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $cabinets = Cabinet::select([
+            'id',
+            'name',
+            'doctor_name',
+            'speciality',
+            'address',
+            'city',
+            'location_link',
+            'thumbnail',
+            'email',
+            'phone',
+            'description',
+            "created_at"
+        ])
+            ->where(function ($query) use ($request) {
+                $query->where('name', 'LIKE', "%{$request->query('search')}%")
+                    ->orWhere('address', 'LIKE', "%{$request->query('search')}%");
+            })
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $cabinets,
+        ], 200);
     }
 
 
@@ -36,24 +58,24 @@ class CabinetController extends Controller
             }
 
             // Validation rules
-                $validator = Validator::make($request->all(), [
-                    'name' => 'required|string|max:255',
-                    'doctor_name' => 'required|string|max:255',
-                    'speciality' => 'required|string|max:255',
-                    'address' => 'required|string|max:255',
-                    'city' => 'required|string|max:255',
-                    'location_link' => 'required|string|url|max:255',
-                    'thumbnail' => 'required|image|mimes:jpeg,png,jpg|max:1024',
-                    'images' => 'required|array|min:1',
-                    'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
-                    'email' => 'required|email|max:255',
-                    'phone' => 'required|string|max:20',
-                    'description' => 'required|string',
-                ]);
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'doctor_name' => 'required|string|max:255',
+                'speciality' => 'required|string|max:255',
+                'address' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'location_link' => 'required|string|url|max:255',
+                'thumbnail' => 'required|image|mimes:jpeg,png,jpg|max:1024',
+                'images' => 'required|array|min:1',
+                'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+                'email' => 'required|email|max:255',
+                'phone' => 'required|string|max:20',
+                'description' => 'required|string',
+            ]);
 
-                if ($validator->fails()) {
-                    return response()->json(['errors' => $validator->errors()], 422);
-                }
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
 
             // Upload thumbnail
             $thumbnailPath = $this->fileManager->uploadThumbnail($request->file('thumbnail'));
