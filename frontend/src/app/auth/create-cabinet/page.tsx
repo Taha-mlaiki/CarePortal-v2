@@ -6,13 +6,14 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImagesForm from "./_components/ImagesForm";
 import PersonalInfoForm from "./_components/PersonalInfoForm";
+import axios from "@/lib/axios";
+import { SubmitButton } from "@/components/SubmitButton";
+import { useRouter } from "next/navigation";
 
-// Zod schema with updated validation
 const cabinetSchema = z.object({
   name: z
     .string()
@@ -59,7 +60,6 @@ export type ImageFile = { file: File; preview: string; id: string };
 export default function CabinetPage() {
   const [cabinetImages, setCabinetImages] = useState<ImageFile[]>([]);
   const [thumbnailImage, setThumbnailImage] = useState<ImageFile | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CabinetFormValues>({
     resolver: zodResolver(cabinetSchema),
@@ -77,15 +77,35 @@ export default function CabinetPage() {
       thumbnail: null,
     },
   });
-
+  const router  = useRouter();
+  const { isSubmitting } = form.formState;
   const onSubmit = async (data: CabinetFormValues) => {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-    console.log("Form Data:", data);
-    toast.success("Cabinet updated successfully!", {
-      description: "Your changes have been saved.",
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("phone", data.phone);
+    formData.append("doctor_name", data.doctor_name);
+    formData.append("speciality", data.speciality);
+    formData.append("city", data.city);
+    formData.append("description", data.description);
+    formData.append("location_link", data.location_link);
+    formData.append("address", data.address);
+    formData.append("thumbnail", data.thumbnail);
+    Array.from(data.images).forEach((image) => {
+      formData.append("images[]", image);
     });
-    setIsSubmitting(false);
+
+    try {
+      const res = await axios.post<{ success: string }>("/cabinets", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success(res.data.success);
+      router.push("/manager/dashboard")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.log(error);
+      toast.error(error.response?.data?.error || "Failed to create cabinet");
+    }
   };
 
   return (
@@ -122,9 +142,9 @@ export default function CabinetPage() {
               </TabsContent>
             </Tabs>
             <div className="flex justify-end gap-4">
-              <Button type="submit" variant="brand" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </Button>
+              <SubmitButton variant="brand" loading={isSubmitting}>
+                Create
+              </SubmitButton>
             </div>
           </form>
         </CardContent>

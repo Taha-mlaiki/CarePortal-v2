@@ -36,7 +36,7 @@ export default function ImagesForm({
         id: crypto.randomUUID(),
       }));
       setCabinetImages((prev) => [...prev, ...newImages]);
-      form.setValue("images", [...cabinetImages, ...newImages]);
+      form.setValue("images", [...cabinetImages, ...newImages.map((image) => image.file)]);
     }
   };
 
@@ -45,7 +45,7 @@ export default function ImagesForm({
       const file = e.target.files[0];
       const newThumbnail = { file, preview: URL.createObjectURL(file), id: crypto.randomUUID() };
       setThumbnailImage(newThumbnail);
-      form.setValue("thumbnail", newThumbnail);
+      form.setValue("thumbnail", file);
     }
   };
 
