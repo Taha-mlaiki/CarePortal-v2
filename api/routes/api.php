@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CabinetController;
 use App\Http\Middleware\EnsureTokenIsValid;
+use App\Http\Middleware\isManager;
+use App\Http\Middleware\isPatient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -14,12 +17,14 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Protected routes
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
+
+    
+    Route::middleware([isManager::class])->group(function(){
+        Route::post("/cabinets",[CabinetController::class,"store"]);
+    });
+    Route::middleware([isPatient::class])->group(function(){
+
+    });
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/admin', function () {
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Unauthorized');
-        }
-        return response()->json(['message' => 'Welcome, Admin!']);
-    });
 });
