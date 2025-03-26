@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { CABINETS_DATA } from "../page";
 import { ArrowRight, Calendar, MapPin, Users } from "lucide-react";
 import { format } from "date-fns/format";
 import { Button } from "@/components/ui/button";
@@ -8,12 +7,16 @@ import Image from "next/image";
 import Link from "next/link";
 
 const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
+export const imageSrc = "http://localhost:8000/storage/";
 
+import { CabinetType } from "../page";
 export const CabinetCard = ({
   cabinet,
 }: {
-  cabinet: (typeof CABINETS_DATA)[0];
+  cabinet: CabinetType
 }) => {
+
+  console.log(imageSrc + cabinet.thumbnail)
   return (
     <div className="group relative overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-60 transition-opacity group-hover:opacity-70"></div>
@@ -25,12 +28,12 @@ export const CabinetCard = ({
         <div className="relative h-48 overflow-hidden">
           <Image
             fill
-            src={cabinet.thumbnail || DEFAULT_THUMBNAIL}
+            src={imageSrc + cabinet.thumbnail || DEFAULT_THUMBNAIL}
             alt={cabinet.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
           <Badge className="absolute left-3 top-3 bg-brand text-white shadow-md">
-            {cabinet.specialty}
+            {cabinet.speciality}
           </Badge>
         </div>
 
@@ -51,7 +54,7 @@ export const CabinetCard = ({
                 <span>Established</span>
               </div>
               <p className="mt-1 text-sm font-semibold text-white">
-                {format(cabinet.dateStarted, "MMM yyyy")}
+                {format(cabinet.created_at, "MMM yyyy")}
               </p>
             </div>
             <div className="rounded-lg bg-white/10 p-2 backdrop-blur-sm">
@@ -60,7 +63,8 @@ export const CabinetCard = ({
                 <span>Appointments</span>
               </div>
               <p className="mt-1 text-sm font-semibold text-white">
-                {cabinet.totalAppointments.toLocaleString()}
+                {/* {cabinet.totalAppointments.toLocaleString()} */}
+                0
               </p>
             </div>
           </div>
