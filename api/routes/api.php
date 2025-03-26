@@ -22,9 +22,12 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::middleware([isManager::class])->group(function(){
         Route::post("/cabinets",[CabinetController::class,"store"]);
     });
-    Route::middleware([isPatient::class])->group(function(){
 
+    Route::middleware([isPatient::class])->group(function(){
     });
+    Route::get("/cabinets",[CabinetController::class,"index"]);
+
+
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
