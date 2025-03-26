@@ -44,17 +44,24 @@ class AuthController extends Controller
                 'role_id' => $role->id,
             ];
 
+            $customTTl = 24 * 60;
+
             if ($request->role === 'manager') {
                 $manager = Manager::create(array_merge($data, [
                     'qualifications' => $request->qualifications ?? null,
                 ]));
-                $token = JWTAuth::fromUser($manager);
+
+                $token = JWTAuth::customClaims([
+                    'exp' => now()->addMinutes($customTTl)->timestamp,
+                ])->fromUser($manager);
                 return response()->json(['role' => 'manager', 'success' => 'Register successfully', 'token' => $token], 201);
             }
 
             if ($request->role === 'patient') {
                 $patient = Patient::create($data);
-                $token = JWTAuth::fromUser($patient);
+                $token = JWTAuth::customClaims([
+                    'exp' => now()->addMinutes($customTTl)->timestamp,
+                ])->fromUser($patient);
                 return response()->json(['role' => 'patient', 'success' => 'Register successfully', 'token' => $token], 201);
             }
         } catch (\Throwable $th) {
@@ -75,7 +82,8 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (!$token = JWTAuth::attempt($credentials)) {
+        $customTTl = 24 * 60;
+        if (!$token = JWTAuth::attempt($credentials,["exp" => now()->addMinutes($customTTl)->timestamp])) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
