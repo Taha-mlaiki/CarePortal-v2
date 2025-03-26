@@ -18,13 +18,13 @@ class EnsureTokenIsValid
     {
         $token = $request->cookie('token');
         if (!$token) {
-            return response()->json(['error' => 'Token not found'], 401);
+            return response()->json(['error' => 'Token not found, Need to login'], 401);
         }
         try {
             $user = JWTAuth::setToken($token)->authenticate();
             $request->merge(["user" => $user]);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            return response()->json(['error' => 'Token has expired'], 401);
+            return response()->json(['error' => 'Token has expired, Need to login'], 401);
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
             return response()->json(['error' => 'Invalid token: ' . $e->getMessage()], 401);
         } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
