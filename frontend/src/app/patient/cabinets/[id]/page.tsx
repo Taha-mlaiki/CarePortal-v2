@@ -132,6 +132,7 @@ const COMMENTS_DATA: Comment[] = [
 
 const fetchCabinet = async (cabinetId: ParamValue) => {
   const { data } = await axios.get(`/cabinets/${cabinetId}`);
+  console.log(data);
   return data.cabinet;
 };
 
@@ -156,6 +157,7 @@ export default function CabinetDetailsPage() {
     queryFn: () => fetchCabinet(cabinetId),
   });
 
+  console.log(cabinet);
   useEffect(() => {
     if (cabinet?.thumbnail) {
       setSelectedImage(cabinet.thumbnail);

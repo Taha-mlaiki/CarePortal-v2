@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { CabinetCard } from "./_components/CabinetCard";
 import axios from "@/lib/axios";
 import { toast } from "sonner";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export interface CabinetType {
   id: number;
@@ -24,42 +24,44 @@ export interface CabinetType {
   created_at: string;
 }
 
+interface CabinetResponse {
+  data: CabinetType[];
+  last_page: number;
+  total: number;
+}
+
+const fetchCabinets = async (
+  page: number,
+  searchTerm: string
+): Promise<CabinetResponse> => {
+  const res = await axios.get("/cabinets", {
+    params: {
+      page,
+      search: searchTerm || undefined,
+    },
+  });
+  return res.data.data;
+};
+
 export default function CabinetsPage() {
-  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [cabinets, setCabinets] = useState<CabinetType[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  // Fetch cabinets from API with pagination, search, and specialty filters
+  const { data, isLoading } = useQuery({
+    queryKey: ["cabinets", currentPage, searchTerm],
+    queryFn: () => fetchCabinets(currentPage, searchTerm),
+    placeholderData: keepPreviousData,
+  });
+
+  // Update totalPages and totalItems when data changes
   useEffect(() => {
-    const fetchCabinets = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get("/cabinets", {
-          params: {
-            page: currentPage,
-            search: searchTerm || undefined, 
-          },
-        });
-
-        const { data } = res.data;
-        console.log(data);
-        setCabinets(data.data); // Array of cabinets
-        setTotalPages(data.last_page); // Total number of pages
-        setTotalItems(data.total); // Total number of cabinets
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error("Error fetching cabinets:", error);
-        toast.error(error.response?.data?.error || "Failed to fetch cabinets");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCabinets();
-  }, [currentPage, searchTerm]);
+    if (data) {
+      setTotalPages(data.last_page || 1); // Fallback to 1 if undefined
+      setTotalItems(data.total || 0); // Fallback to 0 if undefined
+    }
+  }, [data]);
 
   // Generate page numbers (optional: limit visible pages)
   const pageNumbers = [];
@@ -92,7 +94,10 @@ export default function CabinetsPage() {
                 type="text"
                 placeholder="Search cabinets..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); // Reset to page 1 on search
+                }}
                 className="border-gray-300 pl-10 focus:border-brand w-full focus:ring-brand"
               />
             </div>
@@ -108,27 +113,26 @@ export default function CabinetsPage() {
         </div>
       </div>
 
-    {!loading ? (
-      cabinets.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2  lg:grid-cols-3">
-          {cabinets.map((cabinet) => (
-            <CabinetCard key={cabinet.id} cabinet={cabinet} />
-          ))}
-        </div>
+      {!isLoading && data ? (
+        data.data.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {data.data.map((cabinet: CabinetType) => (
+              <CabinetCard key={cabinet.id} cabinet={cabinet} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl bg-white p-12 text-center shadow">
+            <h3 className="text-xl font-medium text-gray-900">
+              No cabinets found
+            </h3>
+            <p className="mt-2 text-gray-600">Try adjusting your search</p>
+          </div>
+        )
       ) : (
-        <div className="rounded-xl bg-white p-12 text-center shadow">
-          <h3 className="text-xl font-medium text-gray-900">
-            No cabinets found
-          </h3>
-          <p className="mt-2 text-gray-600">Try adjusting your search</p>
-        </div>
-      )
-    ):(
-      <div className="py-20 flex items-center justify-center">
+        <div className="py-20 flex items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin" />
-      </div>
-    )}
-      
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
