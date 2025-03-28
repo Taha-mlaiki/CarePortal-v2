@@ -24,7 +24,12 @@ class Cabinet extends Model
         'end_time',
         'is_today_closed',
     ];
-    public function manager(){
+    public function manager()
+    {
         return $this->belongsTo(Manager::class);
+    }
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

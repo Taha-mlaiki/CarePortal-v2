@@ -20,7 +20,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
     
     Route::middleware([isManager::class])->group(function(){
-        Route::post("/cabinets",[CabinetController::class,"store"]);
+        // Route::post("/cabinets",[CabinetController::class,"store"]);
     });
 
     Route::middleware([isPatient::class])->group(function(){
