@@ -47,8 +47,11 @@ class AuthController extends Controller
             $customTTl = 24 * 60;
 
             if ($request->role === 'manager') {
+                if ($request->qualifications == null) {
+                    return response()->json(["error" => "qualification is required"]);
+                }
                 $manager = Manager::create(array_merge($data, [
-                    'qualifications' => $request->qualifications ?? null,
+                    'qualifications' => $request->qualifications,
                 ]));
 
                 $token = JWTAuth::customClaims([
@@ -83,7 +86,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         $customTTl = 24 * 60;
-        if (!$token = JWTAuth::attempt($credentials,["exp" => now()->addMinutes($customTTl)->timestamp])) {
+        if (!$token = JWTAuth::attempt($credentials, ["exp" => now()->addMinutes($customTTl)->timestamp])) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
@@ -105,7 +108,7 @@ class AuthController extends Controller
             } else {
                 return response()->json(['error' => 'Manager record not found'], 500);
             }
-        }else {
+        } else {
             $responseData['redirect'] = '/patient/dashboard';
         }
 

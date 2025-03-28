@@ -24,10 +24,12 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     });
 
     Route::middleware([isPatient::class])->group(function(){
+        
     });
-    Route::get("/cabinets",[CabinetController::class,"index"]);
-
-
+    
+    
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+Route::get("/cabinets",[CabinetController::class,"index"]);
+Route::get("/cabinets/{id}",[CabinetController::class,"show"]);

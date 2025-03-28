@@ -117,7 +117,12 @@ class CabinetController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cabinet = Cabinet::with("manager")->find($id);
+        if (!$cabinet) {
+            return response()->json(["error" => "No cabinet found"],404);
+        }
+        $cabinet->total_appointments = $cabinet->appointments()->count();
+        return response()->json(["cabinet" => $cabinet],200);
     }
 
     /**
