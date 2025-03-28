@@ -1,6 +1,5 @@
 "use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -14,6 +13,8 @@ import {
   Building,
   Award,
   CheckCircle,
+  Loader2,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,45 +48,43 @@ import {
 import CommentsSection, { Comment } from "../_components/CommentSection";
 import FavoriteButton from "../_components/FavoritesBtn";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+import axios from "@/lib/axios";
 
 // Default thumbnail
 const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
+import { imageSrc } from "../_components/CabinetCard";
+import { useQuery } from "@tanstack/react-query";
+import { ParamValue } from "next/dist/server/request/params";
 
-// Mock data for a single cabinet
-const getCabinetData = (id: string) => {
-  return {
-    id: Number.parseInt(id),
-    name: "Wellness Central",
-    specialty: "General Medicine",
-    address: "123 Healing Ave, New York, NY 10001",
-    dateStarted: new Date("2018-03-15"),
-    totalAppointments: 1458,
-    email: "contact@wellnesscentral.com",
-    phone: "+1 (555) 123-4567",
-    owner: {
-      name: "Dr. Sarah Johnson",
-      email: "dr.johnson@wellnesscentral.com",
-      phone: "+1 (555) 987-6543",
-      qualifications: "MD, Board Certified in Internal Medicine",
-    },
-    description:
-      "Wellness Central is a state-of-the-art medical facility dedicated to providing comprehensive healthcare services with a focus on preventive medicine and holistic wellness. Our team of experienced healthcare professionals is committed to delivering personalized care in a comfortable and welcoming environment.",
-    workingHours: {
-      weekdays: "8:00 AM - 6:00 PM",
-      saturday: "9:00 AM - 2:00 PM",
-      sunday: "Closed",
-    },
-    services: [
-      "General Check-ups",
-      "Preventive Care",
-      "Chronic Disease Management",
-      "Vaccinations",
-      "Health Screenings",
-      "Nutritional Counseling",
-    ],
-    images: ["", "", "", "", ""],
-  };
-};
+// type CabinetType = {
+//   address: string;
+//   city: string;
+//   created_at: string; // ISO 8601 date string
+//   day_of_week: string | null;
+//   description: string;
+//   doctor_name: string;
+//   email: string;
+//   end_time: string | null;
+//   id: number;
+//   images: string;
+//   is_today_closed: boolean | null;
+//   location_link: string;
+//   manager: {
+//     id: number;
+//     username: string;
+//     email: string;
+//     image: string | null;
+//     phone: string;
+//   };
+//   manager_id: number;
+//   name: string;
+//   phone: string;
+//   speciality: string;
+//   start_time: string | null;
+//   thumbnail: string;
+//   updated_at: string; // ISO 8601 date string
+// };
 
 const COMMENTS_DATA: Comment[] = [
   {
@@ -131,9 +130,15 @@ const COMMENTS_DATA: Comment[] = [
   },
 ];
 
+const fetchCabinet = async (cabinetId: ParamValue) => {
+  const { data } = await axios.get(`/cabinets/${cabinetId}`);
+  return data.cabinet;
+};
+
 export default function CabinetDetailsPage() {
-  const cabinet = getCabinetData("1");
-  const [selectedImage, setSelectedImage] = useState(cabinet.images[0]);
+  const params = useParams();
+  const cabinetId = params.id;
+  const [selectedImage, setSelectedImage] = useState<string>(DEFAULT_THUMBNAIL);
   const [bookingDate, setBookingDate] = useState("");
   const [bookingTime, setBookingTime] = useState("");
   const [bookingName, setBookingName] = useState("");
@@ -141,6 +146,21 @@ export default function CabinetDetailsPage() {
   const [bookingEmail, setBookingEmail] = useState("");
   const [bookingNotes, setBookingNotes] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
+
+  const {
+    data: cabinet,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["cabinet", cabinetId],
+    queryFn: () => fetchCabinet(cabinetId),
+  });
+
+  useEffect(() => {
+    if (cabinet?.thumbnail) {
+      setSelectedImage(cabinet.thumbnail);
+    }
+  }, [cabinet]);
 
   // Comments state
   const [comments, setComments] = useState<Comment[]>(COMMENTS_DATA);
@@ -199,6 +219,29 @@ export default function CabinetDetailsPage() {
     }, 3000);
   };
 
+  if (isLoading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-20 h-20 animate-spin" />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="bg-white rounded-lg p-8 shadow-lg">
+          <XCircle className="h-10 w-10 text-red-600 mx-auto" />
+          <h2 className="text-2xl font-bold text-center mt-4">
+            Something went wrong
+          </h2>
+          <p className="text-center text-gray-600">
+            {error.message || "An unexpected error occurred"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Link href="/patient/cabinets">
@@ -216,7 +259,7 @@ export default function CabinetDetailsPage() {
           </h1>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600">
             <Badge className="bg-[#3b82f6] text-white">
-              {cabinet.specialty}
+              {cabinet.speciality}
             </Badge>
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
@@ -356,7 +399,7 @@ export default function CabinetDetailsPage() {
             <div className="aspect-video  overflow-hidden">
               <Image
                 fill
-                src={selectedImage || DEFAULT_THUMBNAIL}
+                src={imageSrc + selectedImage || DEFAULT_THUMBNAIL}
                 alt={cabinet.name}
                 className="h-full w-full object-cover"
               />
@@ -364,25 +407,27 @@ export default function CabinetDetailsPage() {
 
             {/* Thumbnails */}
             <div className="grid grid-cols-3 gap-2 p-4 sm:grid-cols-6">
-              {cabinet.images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`cursor-pointer relative overflow-hidden rounded-md border-2 transition-all ${
-                    selectedImage === image
-                      ? "border-[#3b82f6]"
-                      : "border-transparent hover:border-gray-300"
-                  }`}
-                  onClick={() => setSelectedImage(image)}
-                >
-                  <Image
-                    width={100}
-                    height={100}
-                    src="/cabinetPlacholder.svg"
-                    alt={`${cabinet.name} - Image ${index + 1}`}
-                    className="aspect-video h-full w-full object-cover"
-                  />
-                </div>
-              ))}
+              {JSON.parse(cabinet.images).map(
+                (image: string, index: number) => (
+                  <div
+                    key={index}
+                    className={`cursor-pointer relative overflow-hidden rounded-md border-2 transition-all ${
+                      selectedImage === image
+                        ? "border-[#3b82f6]"
+                        : "border-transparent hover:border-gray-300"
+                    }`}
+                    onClick={() => setSelectedImage(image)}
+                  >
+                    <Image
+                      width={100}
+                      height={100}
+                      src="/cabinetPlacholder.svg"
+                      alt={imageSrc + image}
+                      className="aspect-video h-full w-full object-cover"
+                    />
+                  </div>
+                )
+              )}
             </div>
           </div>
 
@@ -401,7 +446,7 @@ export default function CabinetDetailsPage() {
                   <Clock className="h-5 w-5 text-[#3b82f6]" />
                   Working Hours
                 </h3>
-                <ul className="mt-2 space-y-1 text-sm text-gray-700">
+                {/* <ul className="mt-2 space-y-1 text-sm text-gray-700">
                   <li className="flex justify-between">
                     <span>Monday - Friday:</span>
                     <span>{cabinet.workingHours.weekdays}</span>
@@ -414,7 +459,7 @@ export default function CabinetDetailsPage() {
                     <span>Sunday:</span>
                     <span>{cabinet.workingHours.sunday}</span>
                   </li>
-                </ul>
+                </ul> */}
               </div>
             </div>
           </div>
@@ -461,14 +506,16 @@ export default function CabinetDetailsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Owner Information</CardTitle>
-              <CardDescription>About the cabinet owner</CardDescription>
+              <CardDescription>About the cabinet Manager</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
                 <User className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#3b82f6]" />
                 <div>
                   <p className="text-sm font-medium text-gray-700">Name</p>
-                  <p className="text-sm text-gray-600">{cabinet.owner.name}</p>
+                  <p className="text-sm text-gray-600">
+                    {cabinet.manager.username}
+                  </p>
                 </div>
               </div>
 
@@ -476,7 +523,9 @@ export default function CabinetDetailsPage() {
                 <Mail className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#3b82f6]" />
                 <div>
                   <p className="text-sm font-medium text-gray-700">Email</p>
-                  <p className="text-sm text-gray-600">{cabinet.owner.email}</p>
+                  <p className="text-sm text-gray-600">
+                    {cabinet.manager.email}
+                  </p>
                 </div>
               </div>
 
@@ -484,7 +533,9 @@ export default function CabinetDetailsPage() {
                 <Phone className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#3b82f6]" />
                 <div>
                   <p className="text-sm font-medium text-gray-700">Phone</p>
-                  <p className="text-sm text-gray-600">{cabinet.owner.phone}</p>
+                  <p className="text-sm text-gray-600">
+                    {cabinet.manager.phone}
+                  </p>
                 </div>
               </div>
 
@@ -495,7 +546,7 @@ export default function CabinetDetailsPage() {
                     Qualifications
                   </p>
                   <p className="text-sm text-gray-600">
-                    {cabinet.owner.qualifications}
+                    {/* {cabinet.manager.qualifications} */}
                   </p>
                 </div>
               </div>
@@ -515,7 +566,7 @@ export default function CabinetDetailsPage() {
                 <Building className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#3b82f6]" />
                 <div>
                   <p className="text-sm font-medium text-gray-700">Specialty</p>
-                  <p className="text-sm text-gray-600">{cabinet.specialty}</p>
+                  <p className="text-sm text-gray-600">{cabinet.speciality}</p>
                 </div>
               </div>
 
@@ -526,7 +577,7 @@ export default function CabinetDetailsPage() {
                     Established
                   </p>
                   <p className="text-sm text-gray-600">
-                    {format(cabinet.dateStarted, "MMMM yyyy")}
+                    {format(cabinet.created_at, "MMMM yyyy")}
                   </p>
                 </div>
               </div>
@@ -538,7 +589,7 @@ export default function CabinetDetailsPage() {
                     Total Appointments
                   </p>
                   <p className="text-sm text-gray-600">
-                    {cabinet.totalAppointments.toLocaleString()}
+                    {/* {cabinet.totalAppointments.toLocaleString()} */}
                   </p>
                 </div>
               </div>

@@ -18,58 +18,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CabinetCard } from "../_components/CabinetCard";
+import { CabinetType } from "../page";
 
-// Default thumbnail
-
-// Dummy data for cabinets (same as in the cabinets page)
-const CABINETS_DATA = [
-  {
-    id: 1,
-    name: "Wellness Central",
-    thumbnail: "/placeholder.svg?height=200&width=300",
-    address: "123 Healing Ave, New York, NY 10001",
-    specialty: "General Medicine",
-    dateStarted: new Date("2018-03-15"),
-    totalAppointments: 1458,
-  },
-  {
-    id: 2,
-    name: "Dental Excellence",
-    thumbnail: null,
-    address: "456 Smile Street, Boston, MA 02108",
-    specialty: "Dentistry",
-    dateStarted: new Date("2015-07-22"),
-    totalAppointments: 3254,
-  },
-  {
-    id: 3,
-    name: "Mind & Body Wellness",
-    thumbnail: "/placeholder.svg?height=200&width=300",
-    address: "789 Serenity Blvd, San Francisco, CA 94107",
-    specialty: "Psychology",
-    dateStarted: new Date("2019-11-05"),
-    totalAppointments: 876,
-  },
-  {
-    id: 4,
-    name: "Heart Health Specialists",
-    thumbnail: null,
-    address: "321 Pulse Lane, Chicago, IL 60601",
-    specialty: "Cardiology",
-    dateStarted: new Date("2010-02-28"),
-    totalAppointments: 5432,
-  },
-  {
-    id: 5,
-    name: "Family Care Center",
-    thumbnail: "/placeholder.svg?height=200&width=300",
-    address: "555 Nurture Road, Seattle, WA 98101",
-    specialty: "Family Medicine",
-    dateStarted: new Date("2017-09-12"),
-    totalAppointments: 2187,
-  },
-  // More cabinets...
-];
 
 export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<number[]>([]);

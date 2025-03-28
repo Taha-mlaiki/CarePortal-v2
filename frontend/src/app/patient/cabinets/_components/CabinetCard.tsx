@@ -8,8 +8,8 @@ import Link from "next/link";
 
 const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
 export const imageSrc = "http://localhost:8000/storage/";
-
 import { CabinetType } from "../page";
+
 export const CabinetCard = ({
   cabinet,
 }: {
