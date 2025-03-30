@@ -12,7 +12,6 @@ import {
   Users,
   Building,
   Award,
-  CheckCircle,
   Loader2,
   XCircle,
 } from "lucide-react";
@@ -26,25 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { format } from "date-fns";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import CommentsSection, { Comment } from "../_components/CommentSection";
 import FavoriteButton from "../_components/FavoritesBtn";
 import Image from "next/image";
@@ -56,35 +37,7 @@ const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
 import { imageSrc } from "../_components/CabinetCard";
 import { useQuery } from "@tanstack/react-query";
 import { ParamValue } from "next/dist/server/request/params";
-
-// type CabinetType = {
-//   address: string;
-//   city: string;
-//   created_at: string; // ISO 8601 date string
-//   day_of_week: string | null;
-//   description: string;
-//   doctor_name: string;
-//   email: string;
-//   end_time: string | null;
-//   id: number;
-//   images: string;
-//   is_today_closed: boolean | null;
-//   location_link: string;
-//   manager: {
-//     id: number;
-//     username: string;
-//     email: string;
-//     image: string | null;
-//     phone: string;
-//   };
-//   manager_id: number;
-//   name: string;
-//   phone: string;
-//   speciality: string;
-//   start_time: string | null;
-//   thumbnail: string;
-//   updated_at: string; // ISO 8601 date string
-// };
+import BookModal from "../_components/BookModal";
 
 const COMMENTS_DATA: Comment[] = [
   {
@@ -132,7 +85,6 @@ const COMMENTS_DATA: Comment[] = [
 
 const fetchCabinet = async (cabinetId: ParamValue) => {
   const { data } = await axios.get(`/cabinets/${cabinetId}`);
-  console.log(data);
   return data.cabinet;
 };
 
@@ -140,13 +92,6 @@ export default function CabinetDetailsPage() {
   const params = useParams();
   const cabinetId = params.id;
   const [selectedImage, setSelectedImage] = useState<string>(DEFAULT_THUMBNAIL);
-  const [bookingDate, setBookingDate] = useState("");
-  const [bookingTime, setBookingTime] = useState("");
-  const [bookingName, setBookingName] = useState("");
-  const [bookingPhone, setBookingPhone] = useState("");
-  const [bookingEmail, setBookingEmail] = useState("");
-  const [bookingNotes, setBookingNotes] = useState("");
-  const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const {
     data: cabinet,
@@ -157,7 +102,6 @@ export default function CabinetDetailsPage() {
     queryFn: () => fetchCabinet(cabinetId),
   });
 
-  console.log(cabinet);
   useEffect(() => {
     if (cabinet?.thumbnail) {
       setSelectedImage(cabinet.thumbnail);
@@ -193,32 +137,6 @@ export default function CabinetDetailsPage() {
 
   const handleDeleteComment = (id: number) => {
     setComments(comments.filter((comment) => comment.id !== id));
-  };
-
-  const handleBookAppointment = () => {
-    // In a real app, this would send the booking data to an API
-    console.log("Booking appointment:", {
-      date: bookingDate,
-      time: bookingTime,
-      name: bookingName,
-      phone: bookingPhone,
-      email: bookingEmail,
-      notes: bookingNotes,
-    });
-
-    // Show success message
-    setBookingSuccess(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setBookingSuccess(false);
-      setBookingDate("");
-      setBookingTime("");
-      setBookingName("");
-      setBookingPhone("");
-      setBookingEmail("");
-      setBookingNotes("");
-    }, 3000);
   };
 
   if (isLoading) {
@@ -275,125 +193,12 @@ export default function CabinetDetailsPage() {
             cabinetName={cabinet.name}
             variant="button"
           />
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="lg" className="bg-[#3b82f6] hover:bg-[#3b82f6]/90">
-                Book Appointment
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
-              <DialogHeader>
-                <DialogTitle>Book an Appointment</DialogTitle>
-                <DialogDescription>
-                  Fill out the form below to schedule an appointment at{" "}
-                  {cabinet.name}.
-                </DialogDescription>
-              </DialogHeader>
-
-              {bookingSuccess ? (
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <CheckCircle className="h-16 w-16 text-green-500" />
-                  <h3 className="mt-4 text-xl font-semibold text-gray-900">
-                    Booking Successful!
-                  </h3>
-                  <p className="mt-2 text-gray-600">
-                    Your appointment has been scheduled. We&apos;ll contact you
-                    shortly to confirm.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="date">Date</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          value={bookingDate}
-                          onChange={(e) => setBookingDate(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="time">Time</Label>
-                        <Select
-                          value={bookingTime}
-                          onValueChange={setBookingTime}
-                        >
-                          <SelectTrigger id="time">
-                            <SelectValue placeholder="Select time" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="09:00">9:00 AM</SelectItem>
-                            <SelectItem value="10:00">10:00 AM</SelectItem>
-                            <SelectItem value="11:00">11:00 AM</SelectItem>
-                            <SelectItem value="13:00">1:00 PM</SelectItem>
-                            <SelectItem value="14:00">2:00 PM</SelectItem>
-                            <SelectItem value="15:00">3:00 PM</SelectItem>
-                            <SelectItem value="16:00">4:00 PM</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        value={bookingName}
-                        onChange={(e) => setBookingName(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          value={bookingPhone}
-                          onChange={(e) => setBookingPhone(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={bookingEmail}
-                          onChange={(e) => setBookingEmail(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="notes">Notes (Optional)</Label>
-                      <Textarea
-                        id="notes"
-                        placeholder="Please share any specific concerns or requirements"
-                        value={bookingNotes}
-                        onChange={(e) => setBookingNotes(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      type="submit"
-                      onClick={handleBookAppointment}
-                      className="bg-[#3b82f6] hover:bg-[#3b82f6]/90"
-                    >
-                      Confirm Booking
-                    </Button>
-                  </DialogFooter>
-                </>
-              )}
-            </DialogContent>
-          </Dialog>
+          <BookModal cabinetName={cabinet.name} id={cabinet.id} />
         </div>
       </div>
 
       {/* Main content */}
-      <div className="mt-8 grid gap-8 lg:grid-cols-3">
+      <div className="mt-8 grid mb-10 gap-8 lg:grid-cols-3">
         {/* Image gallery - takes up 2 columns on large screens */}
         <div className="lg:col-span-2">
           <div className="overflow-hidden relative rounded-xl bg-white shadow">
@@ -597,23 +402,6 @@ export default function CabinetDetailsPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Book appointment button (mobile only) */}
-          <div className="lg:hidden">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  size="lg"
-                  className="w-full bg-[#3b82f6] hover:bg-[#3b82f6]/90"
-                >
-                  Book Appointment
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                {/* Same content as the other dialog */}
-              </DialogContent>
-            </Dialog>
-          </div>
         </div>
       </div>
       {/* Comments Section Component */}

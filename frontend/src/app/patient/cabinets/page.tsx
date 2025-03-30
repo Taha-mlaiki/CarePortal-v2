@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CabinetCard } from "./_components/CabinetCard";
 import axios from "@/lib/axios";
-import { toast } from "sonner";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export interface CabinetType {
@@ -20,6 +19,7 @@ export interface CabinetType {
   thumbnail: string | null;
   email: string;
   phone: string;
+  total_appointments: number;
   description: string;
   created_at: string;
 }

@@ -10,13 +10,7 @@ const DEFAULT_THUMBNAIL = "/cabinetPlacholder.svg";
 export const imageSrc = "http://localhost:8000/storage/";
 import { CabinetType } from "../page";
 
-export const CabinetCard = ({
-  cabinet,
-}: {
-  cabinet: CabinetType
-}) => {
-
-  console.log(imageSrc + cabinet.thumbnail)
+export const CabinetCard = ({ cabinet }: { cabinet: CabinetType }) => {
   return (
     <div className="group relative overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-xl">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-60 transition-opacity group-hover:opacity-70"></div>
@@ -57,14 +51,14 @@ export const CabinetCard = ({
                 {format(cabinet.created_at, "MMM yyyy")}
               </p>
             </div>
-            <div className="rounded-lg bg-white/10 p-2 backdrop-blur-sm">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-white/90">
+            <div className="rounded-lg bg-white/10 p-2 ">
+              <div className="flex items-center gap-1.5 text-xs">
                 <Users className="h-3.5 w-3.5" />
                 <span>Appointments</span>
               </div>
-              <p className="mt-1 text-sm font-semibold text-white">
-                {/* {cabinet.totalAppointments.toLocaleString()} */}
-                0
+              <p className="mt-1 text-xl ">
+                {cabinet.total_appointments.toLocaleString()}
+                200
               </p>
             </div>
           </div>
