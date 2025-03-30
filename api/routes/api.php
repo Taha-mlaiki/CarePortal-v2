@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -18,18 +19,21 @@ Route::post('/login', [AuthController::class, 'login']);
 // Protected routes
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
-    
-    Route::middleware([isManager::class])->group(function(){
+
+    Route::middleware([isManager::class])->group(function () {
         // Route::post("/cabinets",[CabinetController::class,"store"]);
     });
 
-    Route::middleware([isPatient::class])->group(function(){
-        
-    });
-    
-    
+    Route::middleware([isPatient::class])->group(function () {});
+
+
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
-Route::get("/cabinets",[CabinetController::class,"index"]);
-Route::get("/cabinets/{id}",[CabinetController::class,"show"]);
+
+//TODO replace them back after testing
+Route::get("/cabinets", [CabinetController::class, "index"]);
+Route::get("/cabinets/{id}", [CabinetController::class, "show"]);
+
+//! change the user id after testing 
+Route::post("/appointments", [AppointmentController::class, "store"]);
