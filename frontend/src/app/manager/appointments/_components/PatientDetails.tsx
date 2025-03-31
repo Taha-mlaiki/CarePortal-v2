@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { usePatientDetails } from "@/hooks/use-patient-details";
+import { usePatientDetails } from "@/store/use-patient-details";
 import { Appointment } from "@prisma/client";
 import { Check, Hourglass, X } from "lucide-react";
 import { useEffect, useState } from "react";

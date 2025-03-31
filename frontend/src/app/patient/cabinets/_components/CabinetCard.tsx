@@ -51,13 +51,13 @@ export const CabinetCard = ({ cabinet }: { cabinet: CabinetType }) => {
                 {format(cabinet.created_at, "MMM yyyy")}
               </p>
             </div>
-            <div className="rounded-lg bg-white/10 p-2 ">
-              <div className="flex items-center gap-1.5 text-xs">
+            <div className="rounded-lg bg-white/10 p-2  text-xs font-medium text-white/90">
+              <div className="flex items-center gap-1.5 ">
                 <Users className="h-3.5 w-3.5" />
                 <span>Appointments</span>
               </div>
-              <p className="mt-1 text-xl ">
-                {cabinet.total_appointments.toLocaleString()}
+              <p className="mt-1  ">
+                {/* {cabinet.total_appointments.toLocaleString()} */}
                 200
               </p>
             </div>

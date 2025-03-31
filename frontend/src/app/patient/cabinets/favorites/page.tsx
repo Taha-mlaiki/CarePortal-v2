@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Heart, Search, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,47 +17,45 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CabinetCard } from "../_components/CabinetCard";
+import axios from "@/lib/axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { CabinetType } from "../page";
+import { useFavoriteStore } from "@/store/favoritesStore";
 
+const loadFavorites = async (searchTerm: string): Promise<CabinetType[]> => {
+  const res = await axios.get("/patient/favorites", {
+    params: { searchTerm },
+  });
+  if (res.status === 200) {
+    return res.data.favorites;
+  }
+  return [];
+};
 
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const setFavoritesIds = useFavoriteStore((state) => state.setFavorites);
+  const { data: favorites = [], isLoading } = useQuery({
+    queryKey: ["favorites", searchTerm],
+    queryFn: () => loadFavorites(searchTerm),
+  });
 
-  // Load favorites from localStorage on component mount
-  useEffect(() => {
-    const loadFavorites = () => {
-      try {
-        const storedFavorites = JSON.parse(
-          localStorage.getItem("favoriteCabinets") || "[]"
-        );
-        setFavorites(storedFavorites);
-      } catch (error) {
-        console.error("Error loading favorites:", error);
-        setFavorites([]);
-      } finally {
-        setIsLoading(false);
+  const clearAllFavorites = async () => {
+    try {
+      const res = await axios.delete("/patient/favorites");
+      if (res.status === 200 || res.status === 204) {
+        queryClient.invalidateQueries({ queryKey: ["favorites"] });
+        toast.success("All favorites cleared successfully!");
+        setFavoritesIds([]);
+      } else {
+        throw new Error("Unexpected response status");
       }
-    };
-
-    loadFavorites();
-  }, []);
-
-  // Filter cabinets based on favorites and search term
-  const filteredCabinets = CABINETS_DATA.filter(
-    (cabinet) =>
-      favorites.includes(cabinet.id) &&
-      (searchTerm === "" ||
-        cabinet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cabinet.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cabinet.specialty.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  // Remove all favorites
-  const clearAllFavorites = () => {
-    localStorage.setItem("favoriteCabinets", "[]");
-    setFavorites([]);
+    } catch (error) {
+      toast.error("Failed to clear favorites. Please try again.");
+      console.error("Clear favorites error:", error);
+    }
   };
 
   return (
@@ -150,58 +147,42 @@ export default function FavoritesPage() {
       {/* Loading state */}
       {isLoading ? (
         <div className="flex h-60 items-center justify-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#3b82f6] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-          <p className="ml-4 text-gray-600">Loading your favorites...</p>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#3b82f6] border-r-transparent align-[-0.125em]"></div>
+          <p className="ml-4 text-gray-600">
+            {searchTerm
+              ? "Searching favorites..."
+              : "Loading your favorites..."}
+          </p>
+        </div>
+      ) : favorites.length === 0 ? (
+        // Empty state
+        <div className="flex flex-col items-center justify-center rounded-xl bg-white p-12 text-center shadow">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+            <Heart className="h-10 w-10 text-gray-400" />
+          </div>
+          <h3 className="mt-6 text-xl font-medium text-gray-900">
+            {searchTerm ? "No matching favorites" : "No favorites yet"}
+          </h3>
+          <p className="mt-2 max-w-md text-gray-600">
+            {searchTerm
+              ? "Try adjusting your search term."
+              : "Start adding cabinets to your favorites by clicking the heart icon on any cabinet card or detail page."}
+          </p>
+          {!searchTerm && (
+            <Link href="/patient/cabinets">
+              <Button className="mt-6 bg-[#3b82f6] hover:bg-[#3b82f6]/90">
+                Browse Cabinets
+              </Button>
+            </Link>
+          )}
         </div>
       ) : (
-        <>
-          {/* Empty state */}
-          {favorites.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl bg-white p-12 text-center shadow">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
-                <Heart className="h-10 w-10 text-gray-400" />
-              </div>
-              <h3 className="mt-6 text-xl font-medium text-gray-900">
-                No favorites yet
-              </h3>
-              <p className="mt-2 max-w-md text-gray-600">
-                Start adding cabinets to your favorites by clicking the heart
-                icon on any cabinet card or detail page.
-              </p>
-              <Link href="/patient/cabinets">
-                <Button className="mt-6 bg-[#3b82f6] hover:bg-[#3b82f6]/90">
-                  Browse Cabinets
-                </Button>
-              </Link>
-            </div>
-          ) : filteredCabinets.length === 0 ? (
-            // No results from search
-            <div className="rounded-xl bg-white p-12 text-center shadow">
-              <h3 className="text-xl font-medium text-gray-900">
-                No matching cabinets found
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Try adjusting your search criteria
-              </p>
-              {searchTerm && (
-                <Button
-                  variant="outline"
-                  className="mt-4"
-                  onClick={() => setSearchTerm("")}
-                >
-                  Clear Search
-                </Button>
-              )}
-            </div>
-          ) : (
-            // Favorites grid
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCabinets.map((cabinet) => (
-                <CabinetCard key={cabinet.id} cabinet={cabinet} />
-              ))}
-            </div>
-          )}
-        </>
+        // Favorites list
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {favorites.map((cabinet: CabinetType) => (
+            <CabinetCard key={cabinet.id} cabinet={cabinet} />
+          ))}
+        </div>
       )}
     </div>
   );
