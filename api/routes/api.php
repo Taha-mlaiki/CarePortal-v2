@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\isManager;
 use App\Http\Middleware\isPatient;
@@ -24,16 +25,21 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         // Route::post("/cabinets",[CabinetController::class,"store"]);
     });
 
-    Route::middleware([isPatient::class])->group(function () {});
+    Route::middleware([isPatient::class])->group(function () {
+        // cabinets
+        Route::get("/cabinets", [CabinetController::class, "index"]);
+        Route::get("/cabinets/{id}", [CabinetController::class, "show"]);
+        //appointments
+        Route::post("/appointments", [AppointmentController::class, "store"]);
+        // favorites
+        Route::get("/patient/favorites", [FavoriteController::class, "index"]);
+        Route::post("/patient/favorites", [FavoriteController::class, "store"]);
+        Route::delete("/patient/favorites/{id}", [FavoriteController::class, "deleteById"]);
+        Route::delete("/patient/favorites", [FavoriteController::class, "deleteAll"]);
+        Route::get("/patient/cabinets/favoritedIds", [FavoriteController::class, "favoritedIds"]);
+    });
 
 
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
-
-//TODO replace them back after testing
-Route::get("/cabinets", [CabinetController::class, "index"]);
-Route::get("/cabinets/{id}", [CabinetController::class, "show"]);
-
-//! change the user id after testing 
-Route::post("/appointments", [AppointmentController::class, "store"]);

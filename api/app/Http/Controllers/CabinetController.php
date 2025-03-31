@@ -49,9 +49,7 @@ class CabinetController extends Controller
     public function store(Request $request)
     {
         try {
-            //code...
             $user = $request->user;
-            // Find the manager record
             $manager = Manager::where('id', $user->id)->first();
             if (!$manager) {
                 return response()->json(['error' => 'Manager record not found'], 500);

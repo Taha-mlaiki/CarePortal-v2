@@ -12,7 +12,6 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            //! 'user_id' => 'required|exists:users,id',
             'cabinet_id' => 'required|exists:cabinets,id',
             'appointment_date' => 'required|date',
             'reason' => 'required|string|max:150',
@@ -22,10 +21,9 @@ class AppointmentController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
         try {
-
+            $patient_id = $request->user->id;
             $appointment = Appointment::create([
-                //! change it here
-                'patient_id' => 3,
+                'patient_id' => $patient_id,
                 'cabinet_id' => $request->cabinet_id,
                 'appointment_date' => $request->appointment_date,
                 'reason' => $request->reason,
