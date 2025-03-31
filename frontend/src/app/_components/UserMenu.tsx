@@ -11,8 +11,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ProfileModal from "./Profile";
 import Link from "next/link";
+import axios from "@/lib/axios";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { FormEvent } from "react";
 
 export const UserMenu = () => {
+  const router = useRouter();
+  const logout = async (e: FormEvent) => {
+    e.preventDefault();
+    const res = await axios.post("/logout");
+    if (res.status === 200) {
+      toast.success("logout successfully");
+      router.push("/");
+    } else {
+      console.log(res.data.error || "Something went wrong in logout process");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,34 +55,37 @@ export const UserMenu = () => {
         <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
           <ProfileModal />
         </DropdownMenuItem>
-        <Separator className="my-0.5" />
-        <DropdownMenuItem>
-          <Link href="/patient/dashboard" className="flex items-center gap-x-2">
+        <Separator className="my-0.5 h-[1.5px]" />
+        <Link href="/patient/dashboard" className="flex items-center gap-x-2">
+          <DropdownMenuItem className="w-full">
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
-          </Link>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </Link>
         <Separator className="my-0.5" />
-        <DropdownMenuItem>
-          <Link
-            href="/patient/cabinets/favorites"
-            className="flex items-center gap-x-2"
-          >
+        <Link
+          href="/patient/cabinets/favorites"
+          className="flex items-center gap-x-2"
+        >
+          <DropdownMenuItem className="w-full">
             <HeartIcon className="w-4 h-4" />
             Favorites
-          </Link>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </Link>
 
         <Separator className="my-0.5" />
-        <DropdownMenuItem>
-          <Link href="/patient/cabinets" className="flex items-center gap-x-2">
+        <Link
+          href="/patient/cabinets"
+          className="flex items-center w-full gap-x-2"
+        >
+          <DropdownMenuItem className="w-full">
             <Store className="w-4 h-4" />
             Cabinets
-          </Link>
-        </DropdownMenuItem>
+          </DropdownMenuItem>
+        </Link>
         <Separator className="my-0.5" />
-        <form className="w-full ">
-          <button className="w-full justify-between  ">
+        <form className="w-full" onSubmit={logout}>
+          <button className="w-full justify-between">
             <DropdownMenuItem className="flex justify-between">
               <span className="text-red-500">Log out</span>
               <LogOut className="w-4 h-4 text-red-500" />
