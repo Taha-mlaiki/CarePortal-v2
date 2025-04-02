@@ -33,7 +33,7 @@ class AuthController extends Controller
             }
 
             $role = Role::where('name', $request->role)->first();
-            if (!$role) {
+            if (!$role || !in_array($role->name, ['manager', 'patient'])) {
                 return response()->json(['error' => 'Invalid role'], 400);
             }
 
@@ -45,29 +45,24 @@ class AuthController extends Controller
                 'role_id' => $role->id,
             ];
 
-            $customTTl = 24 * 60;
 
             if ($request->role === 'manager') {
-                if ($request->qualifications == null) {
-                    return response()->json(["error" => "qualification is required"]);
+                if (!$request->qualifications) {
+                    return response()->json(['error' => 'Qualifications are required'], 400);
                 }
-                $manager = Manager::create(array_merge($data, [
-                    'qualifications' => $request->qualifications,
-                ]));
-
-                $token = JWTAuth::customClaims([
-                    'exp' => now()->addMinutes($customTTl)->timestamp,
-                ])->fromUser($manager);
-                return response()->json(['role' => 'manager', 'success' => 'Register successfully', 'token' => $token], 201);
+                $data['qualifications'] = $request->qualifications;
+                $user = Manager::create($data);
+            } elseif ($request->role === 'patient') {
+                $user = Patient::create($data);
             }
 
-            if ($request->role === 'patient') {
-                $patient = Patient::create($data);
-                $token = JWTAuth::customClaims([
-                    'exp' => now()->addMinutes($customTTl)->timestamp,
-                ])->fromUser($patient);
-                return response()->json(['role' => 'patient', 'success' => 'Register successfully', 'token' => $token], 201);
-            }
+            $token = JWTAuth::fromUser($user);
+
+            return response()->json([
+                'role' => $request->role,
+                'success' => 'Registered successfully',
+                'token' => $token,
+            ], 201);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
@@ -86,8 +81,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        $customTTl = 24 * 60;
-        if (!$token = JWTAuth::attempt($credentials, ["exp" => now()->addMinutes($customTTl)->timestamp])) {
+        if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
@@ -125,7 +119,7 @@ class AuthController extends Controller
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
-            return response()->json(['message' => 'Logged out successfully'])
+            return response()->json(['message' => 'Logged out successfully'],200)
                 ->withCookie(cookie('token', '', -1, '/', null, false, true));
         } catch (JWTException $e) {
             return response()->json(['message' => 'Failed to logout'], 500);
