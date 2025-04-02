@@ -38,6 +38,7 @@ export default function ProfileModal() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingPass, setLoadingPass] = useState(false);
   const { user, setUser } = useUserState();
 
   const [editedProfile, setEditedProfile] = useState<
@@ -99,7 +100,6 @@ export default function ProfileModal() {
         formData.append("image", image);
       }
 
-
       // Send the request with FormData directly
       const res = await axios.post("/user/profile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -112,7 +112,7 @@ export default function ProfileModal() {
       }
 
       //@ts-expect-error to many types
-    } catch (error:AxiosError) {
+    } catch (error: AxiosError) {
       console.log("Error:", error.response?.data);
       const message =
         error.response?.data?.error ||
@@ -133,7 +133,7 @@ export default function ProfileModal() {
       return;
     }
     try {
-      setLoading(true);
+      setLoadingPass(true);
       const res = await axios.put("/user/password", {
         old_password: passwords.oldPassword,
         new_password: passwords.newPassword,
@@ -149,7 +149,7 @@ export default function ProfileModal() {
         error.response?.data?.error || "Failed to reset password"
       );
     } finally {
-      setLoading(false);
+      setLoadingPass(false);
     }
   };
 
@@ -203,7 +203,7 @@ export default function ProfileModal() {
                     <X className="h-4 w-4 mr-1" />
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleSaveProfile}>
+                  <Button variant="brand" size="sm" onClick={handleSaveProfile}>
                     {loading ? (
                       <Loader className="w-4 h-4 animate-spin mr-1" />
                     ) : (
@@ -411,8 +411,15 @@ export default function ProfileModal() {
                     )}
 
                     <div className="flex justify-end mt-4">
-                      <Button onClick={handleResetPassword}>
-                        Reset Password
+                      <Button
+                        variant="brand"
+                        disabled={loadingPass}
+                        onClick={handleResetPassword}
+                      >
+                        {loadingPass && (
+                          <Loader className="w-4 h-4 animate-spin mr-1" />
+                        )}
+                        {loadingPass ? "Loading..." : "Reset Password"}
                       </Button>
                     </div>
                   </CardContent>

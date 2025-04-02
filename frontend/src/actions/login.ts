@@ -16,6 +16,7 @@ export const loginAction = async ({
       password,
     });
     const cookieStore = await cookies();
+    console.log(res)
     if (res.data.token) {
       cookieStore.set({
         name: "token",
@@ -31,7 +32,8 @@ export const loginAction = async ({
       };
     }
     return { error: "No token received" };
-  } catch (error) {
-    return { error };
+    //@ts-expect-error Axios response weired
+  } catch (error:AxiosError) {
+    return { error:error.response.data.error };
   }
 };

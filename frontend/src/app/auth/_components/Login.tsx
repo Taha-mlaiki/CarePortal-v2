@@ -37,7 +37,7 @@ export function LoginForm() {
   const { isSubmitting: isLoading } = form.formState;
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    try {
+
       const res = await loginAction(data);
       if (res?.success) {
         if (res?.warning !== null) {
@@ -49,11 +49,12 @@ export function LoginForm() {
           toast.success(res.success);
           router.push(res.redirect);
         }
+      }else if(res.error){
+        console.log(res.error)
+        toast.error(res.error)
+      }else {
+        console.log(res);
       }
-    } catch (error) {
-      console.error("Axios error:", error);
-      toast.error("An unexpected error occurred");
-    }
   };
 
   return (
