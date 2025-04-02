@@ -18,30 +18,29 @@ export const registerAction = async ({
   role: "patient" | "manager";
   qualifications?: string;
 }) => {
- 
-    const res = await axios.post("/register", {
-      username,
-      email,
-      password,
-      phone_number,
-      role,
-      qualifications,
+  const res = await axios.post("/register", {
+    username,
+    email,
+    password,
+    phone_number,
+    role,
+    qualifications,
+  });
+  const cookieStore = await cookies();
+  if (res.data.token) {
+    cookieStore.set({
+      name: "token",
+      value: res.data.token,
+      httpOnly: true,
+      path: "/",
+      maxAge: 60 * 60 * 24,
     });
-    const cookieStore = await cookies();
-    if (res.data.token) {
-      cookieStore.set({
-        name: "token",
-        value: res.data.token,
-        httpOnly: true,
-        path: "/",
-        maxAge: 60 * 2,
-      });
-      return {
-        success: res.data.success,
-        role: res.data.role,
-      };
-    }
-    if(res.data.errors){
-      throw new Error("All fields are required I think you skipped a input :(")
-    }
+    return {
+      success: res.data.success,
+      role: res.data.role,
+    };
+  }
+  if (res.data.errors) {
+    throw new Error("All fields are required I think you skipped a input :(");
+  }
 };

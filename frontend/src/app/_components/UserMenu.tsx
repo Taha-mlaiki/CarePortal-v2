@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useUserState } from "@/store/userStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { HeartIcon, LayoutDashboard, LogOut, Store } from "lucide-react";
@@ -16,18 +15,14 @@ import Link from "next/link";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const UserMenu = () => {
   const router = useRouter();
-  const { user, fetchUser, clearUser } = useUserState();
+  const { user, clearUser } = useUserState();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  useEffect(() => {
-    if (!user) {
-      fetchUser();
-    }
-  }, [fetchUser, user]);
 
   const logout = async (e: FormEvent) => {
     e.preventDefault();
@@ -35,8 +30,9 @@ export const UserMenu = () => {
       const res = await axios.post("/logout");
       if (res.status === 200) {
         toast.success("Logout successful");
-        clearUser(); // Clear user from store
-        router.push("/");
+        setIsLoggingOut(true); 
+        clearUser(); 
+        router.push("/"); 
       }
     } catch (error) {
       console.log(error || "Something went wrong in logout process");
@@ -44,7 +40,7 @@ export const UserMenu = () => {
     }
   };
 
-  if (!user) {
+  if (!user || isLoggingOut) {
     return (
       <Skeleton className="w-10 h-10 rounded-full" />
     );
@@ -65,7 +61,7 @@ export const UserMenu = () => {
       <DropdownMenuContent
         side="bottom"
         sideOffset={20}
-        className="absolute w-fit -right-6 p-2"
+        className="absolute  -right-6 p-2 w-[250px]"
       >
         <div className="flex items-start gap-x-2 mb-2">
           <Avatar>
