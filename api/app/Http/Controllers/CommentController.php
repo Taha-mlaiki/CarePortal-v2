@@ -56,17 +56,27 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $comment = Comment::findOrFail($id);
+        $user = $request->user;
+        $comment = Comment::where("id", $id)->where("patient_id", $user->id)->first();
+        if (!$comment) {
+            return response()->json(['error' => 'Comment not found'], 404);
+        }
         $comment->update(['content' => $request->content]);
-        return response()->json(['comment' => $comment]);
+        $comment->load('patient');
+        return response()->json(['comment' => $comment], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        Comment::findOrFail($id)->delete();
+        $user = $request->user;
+        $comment =  Comment::where("id", $id)->where("patient_id", $user->id)->first();
+        if (!$comment) {
+            return response()->json(['error' => 'Comment not found'], 404);
+        }
+        $comment->delete();
         return response()->json(null, 204);
     }
 }
