@@ -82,6 +82,7 @@ const updateComment = async ({
   commentId: number;
   content: string;
 }) => {
+  console.log(commentId,content);
   const { data } = await axios.put(`/patient/cabinets/comments/${commentId}`, {
     content,
   });

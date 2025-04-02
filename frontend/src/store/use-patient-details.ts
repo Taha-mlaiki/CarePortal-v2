@@ -10,6 +10,6 @@ type actions = {
 export const usePatientDetails = create<actions>()((set)=> ({
     id:undefined,
     isOpen:false,
-    setOpen:(patientId:string)=> set((state)=> ({isOpen:true,id:patientId})),
-    setClose:()=> set((state)=> ({isOpen:false,id:undefined}))
+    setOpen:(patientId:string)=> set(()=> ({isOpen:true,id:patientId})),
+    setClose:()=> set(()=> ({isOpen:false,id:undefined}))
 }))

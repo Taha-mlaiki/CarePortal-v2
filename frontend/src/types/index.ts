@@ -2,7 +2,13 @@
 import * as z from "zod"
 
 
-
+export type UserType = {
+    id: number;
+    username: string;
+    image: string | undefined;
+    email: string;
+    role: "patient" | "manager";
+  };
 
 
 

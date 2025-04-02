@@ -17,11 +17,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useCommentableCabinetsStore } from "@/store/commentStore";
+import { useUserState } from "@/store/userStore";
 
 // Comment type definition
 export type Comment = {
   id: number;
   patient: {
+    id: number;
     username: string;
     image: string | null;
   };
@@ -46,7 +48,7 @@ export default function CommentsSection({
   const [commentText, setCommentText] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editedContent, setEditedContent] = useState("");
-
+  const user = useUserState((state) => state.user);
   const cabinetIds = useCommentableCabinetsStore((state) => state.cabinetIds);
 
   const handleAddComment = () => {
@@ -74,27 +76,29 @@ export default function CommentsSection({
     <div className="py-10">
       <h2 className="text-2xl font-bold text-gray-900">Comments</h2>
 
-      {/* {cabinetIds.includes(cabinet_id) && ( */}
-      <div className="mt-6 rounded-xl bg-white p-6 shadow">
-        <h3 className="text-lg font-semibold text-gray-900">Leave a Comment</h3>
-        <div className="mt-4">
-          <Textarea
-            placeholder="Share your thoughts about this cabinet..."
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            className="min-h-[120px]"
-          />
-          <div className="mt-4 flex justify-end">
-            <Button
-              onClick={handleAddComment}
-              className="bg-[#3b82f6] hover:bg-[#3b82f6]/90"
-            >
-              Post Comment
-            </Button>
+      {cabinetIds.includes(cabinet_id) && (
+        <div className="mt-6 rounded-xl bg-white p-6 shadow">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Leave a Comment
+          </h3>
+          <div className="mt-4">
+            <Textarea
+              placeholder="Share your thoughts about this cabinet..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              className="min-h-[120px]"
+            />
+            <div className="mt-4 flex justify-end">
+              <Button
+                onClick={handleAddComment}
+                className="bg-[#3b82f6] hover:bg-[#3b82f6]/90"
+              >
+                Post Comment
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-      {/* )} */}
+      )}
 
       {/* Comments list */}
       <div className="mt-6">
@@ -108,7 +112,7 @@ export default function CommentsSection({
               <div className="flex items-start gap-4">
                 <Avatar className="h-10 w-10 border">
                   <AvatarImage
-                    src={comment.patient.image}
+                    src={comment.patient.image || undefined}
                     alt={comment.patient.username}
                   />
                   <AvatarFallback className="bg-[#3b82f6]/10 text-[#3b82f6]">
@@ -122,7 +126,7 @@ export default function CommentsSection({
                     </h4>
 
                     {/* Edit/Delete buttons - only show for own comments */}
-                    {comment.id && (
+                    {comment.patient.id === user!.id && (
                       <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"

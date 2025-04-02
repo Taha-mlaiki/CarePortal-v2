@@ -9,6 +9,6 @@ type CommentableCabinetsState = {
 export const useCommentableCabinetsStore = create<CommentableCabinetsState>(
   (set) => ({
     cabinetIds: [],
-    setCabinetsIds: (ids) => set({ cabinetIds: ids }),
+    setCabinetsIds: (ids) => set({ cabinetIds : ids }),
   })
 );
