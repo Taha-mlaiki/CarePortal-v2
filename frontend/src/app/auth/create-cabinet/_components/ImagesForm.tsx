@@ -28,6 +28,7 @@ export default function ImagesForm({
   thumbnailImage,
   setThumbnailImage,
 }: ImagesFormProps) {
+  
   const handleCabinetImagesUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files).map((file) => ({

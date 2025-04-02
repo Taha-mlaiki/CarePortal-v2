@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FormEvent, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { imageSrc } from "../patient/cabinets/_components/CabinetCard";
 
 export const UserMenu = () => {
   const router = useRouter();
@@ -52,7 +53,7 @@ export const UserMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={user.image} />
+          <AvatarImage src={imageSrc + user.image} />
           <AvatarFallback className="uppercase font-bold">
             {user.username.slice(0, 2)}
           </AvatarFallback>
@@ -65,7 +66,7 @@ export const UserMenu = () => {
       >
         <div className="flex items-start gap-x-2 mb-2">
           <Avatar>
-            <AvatarImage src={user.image} />
+            <AvatarImage src={imageSrc + user.image}  />
             <AvatarFallback className="uppercase font-bold">
               {user.username.slice(0, 2)}
             </AvatarFallback>

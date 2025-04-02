@@ -6,6 +6,7 @@ interface stateType {
   user: UserType | null;
   fetchUser: () => void;
   clearUser: () => void;
+  setUser: (userData: UserType) => void;
 }
 
 export const useUserState = create<stateType>((set) => ({
@@ -21,5 +22,6 @@ export const useUserState = create<stateType>((set) => ({
       set({ user: null });
     }
   },
+  setUser: (userData) => set({ user: userData }),
   clearUser: () => set({ user: null }),
 }));
