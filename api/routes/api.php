@@ -32,6 +32,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get("/cabinets/{id}", [CabinetController::class, "show"]);
         //appointments
         Route::post("/appointments", [AppointmentController::class, "store"]);
+        Route::get("/appointments", [AppointmentController::class, "show"]);
         // favorites
         Route::get("/patient/favorites", [FavoriteController::class, "index"]);
         Route::post("/patient/favorites", [FavoriteController::class, "store"]);

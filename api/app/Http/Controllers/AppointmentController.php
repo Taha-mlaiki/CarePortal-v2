@@ -9,6 +9,42 @@ use Illuminate\Support\Facades\Validator;
 class AppointmentController extends Controller
 {
 
+    public function show(Request $request)
+    {
+        $query = Appointment::with('cabinet')->where('patient_id', $request->user->id);
+
+        if ($search = $request->query('search')) {
+            $query->whereHas('cabinet', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($status = $request->query('status')) {
+            if ($status !== 'all') {
+                $query->where('status', $status);
+            }
+        }
+
+        // Filter by date
+        if ($date = $request->query('date')) {
+            if ($date === 'today') {
+                $query->whereDate('appointment_date', today());
+            } elseif ($date === 'week') {
+                $query->whereBetween('appointment_date', [now()->startOfWeek(), now()->endOfWeek()]);
+            } elseif ($date === 'month') {
+                $query->whereMonth('appointment_date', now()->month);
+            }
+        }
+
+        $perPage = $request->query('per_page', 10);
+        $appointments = $query->paginate($perPage);
+
+        return response()->json([
+            'appointments' => $appointments,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
