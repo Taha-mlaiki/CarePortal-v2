@@ -55,7 +55,7 @@ const BookModal = ({
   id,
 }: {
   cabinetName: string;
-  id: string;
+  id: number;
 }) => {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [open, setOpen] = useState(false);

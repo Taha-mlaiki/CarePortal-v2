@@ -16,21 +16,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useCommentableCabinetsStore } from "@/store/commentStore";
 
 // Comment type definition
 export type Comment = {
   id: number;
-  user: {
-    name: string;
-    avatar: string | null;
-    initials: string;
+  patient: {
+    username: string;
+    image: string | null;
   };
   content: string;
-  isOwnComment?: boolean;
 };
 
 type CommentsProps = {
   comments: Comment[];
+  cabinet_id: number;
   onAddComment: (content: string) => void;
   onUpdateComment: (id: number, content: string) => void;
   onDeleteComment: (id: number) => void;
@@ -38,6 +38,7 @@ type CommentsProps = {
 
 export default function CommentsSection({
   comments,
+  cabinet_id,
   onAddComment,
   onUpdateComment,
   onDeleteComment,
@@ -46,10 +47,11 @@ export default function CommentsSection({
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editedContent, setEditedContent] = useState("");
 
+  const cabinetIds = useCommentableCabinetsStore((state) => state.cabinetIds);
+
   const handleAddComment = () => {
     if (!commentText.trim()) return;
     onAddComment(commentText);
-    setCommentText("");
   };
 
   const startEditing = (comment: Comment) => {
@@ -69,10 +71,10 @@ export default function CommentsSection({
   };
 
   return (
-    <div >
+    <div className="py-10">
       <h2 className="text-2xl font-bold text-gray-900">Comments</h2>
 
-      {/* Add comment form */}
+      {/* {cabinetIds.includes(cabinet_id) && ( */}
       <div className="mt-6 rounded-xl bg-white p-6 shadow">
         <h3 className="text-lg font-semibold text-gray-900">Leave a Comment</h3>
         <div className="mt-4">
@@ -92,6 +94,7 @@ export default function CommentsSection({
           </div>
         </div>
       </div>
+      {/* )} */}
 
       {/* Comments list */}
       <div className="mt-6">
@@ -104,25 +107,22 @@ export default function CommentsSection({
             <div key={comment.id} className="rounded-xl bg-white p-6 shadow">
               <div className="flex items-start gap-4">
                 <Avatar className="h-10 w-10 border">
-                  {comment.user.avatar ? (
-                    <AvatarImage
-                      src={comment.user.avatar}
-                      alt={comment.user.name}
-                    />
-                  ) : (
-                    <AvatarFallback className="bg-[#3b82f6]/10 text-[#3b82f6]">
-                      {comment.user.initials}
-                    </AvatarFallback>
-                  )}
+                  <AvatarImage
+                    src={comment.patient.image}
+                    alt={comment.patient.username}
+                  />
+                  <AvatarFallback className="bg-[#3b82f6]/10 text-[#3b82f6]">
+                    {comment.patient.username.slice(0, 2)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium text-gray-900">
-                      {comment.user.name}
+                      {comment.patient.username}
                     </h4>
 
                     {/* Edit/Delete buttons - only show for own comments */}
-                    {comment.isOwnComment && (
+                    {comment.id && (
                       <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"
