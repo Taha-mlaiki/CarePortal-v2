@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\isManager;
@@ -37,6 +38,11 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::delete("/patient/favorites/{id}", [FavoriteController::class, "deleteById"]);
         Route::delete("/patient/favorites", [FavoriteController::class, "deleteAll"]);
         Route::get("/patient/cabinets/favoritedIds", [FavoriteController::class, "favoritedIds"]);
+        //comments
+        Route::post('/patient/cabinets/comments', [CommentController::class, 'store']);
+        Route::put('/patient/cabinets/comments/{id}', [CommentController::class, 'update']);
+        Route::delete('/patient/cabinets/comments/{id}', [CommentController::class, 'destroy']);
+        Route::get("/patient/cabinets/commentable", [CommentController::class, "commentable"]);
     });
 
 

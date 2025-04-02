@@ -20,6 +20,9 @@ class Patient extends User
     }
 
     public function favorites(){
-        return $this->hasMany(Favorite::class);
+        return $this->hasMany(Favorite::class, 'patient_id');
+    }
+    public function comments(){
+        return $this->hasMany(Comment::class, 'patient_id');
     }
 }

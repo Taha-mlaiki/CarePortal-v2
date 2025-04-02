@@ -117,7 +117,7 @@ class CabinetController extends Controller
     {
         try {
             //code...
-            $cabinet = Cabinet::with("manager")->findOrFail($id);
+            $cabinet = Cabinet::with("manager")->with("comments.patient")->findOrFail($id);
             if (!$cabinet) {
                 return response()->json(["error" => "No cabinet found"], 404);
             }
