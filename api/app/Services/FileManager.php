@@ -64,4 +64,23 @@ class FileManager
 
         return $success;
     }
+
+    public function uploadProfileImage(UploadedFile $image, string $directory = 'users/profiles'): ?string
+    {
+        if (!$image->isValid()) {
+            return null;
+        }
+
+        $imageName = time() . '_profile.' . $image->getClientOriginalExtension();
+        $imagePath = $image->storeAs($directory, $imageName, 'public');
+
+        return $imagePath;
+    }
+    public function deleteProfileImage(?string $imagePath): bool
+    {
+        if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+            return Storage::disk('public')->delete($imagePath);
+        }
+        return false;
+    }
 }

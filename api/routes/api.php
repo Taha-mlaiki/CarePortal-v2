@@ -46,6 +46,8 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     });
 
 
+    Route::post('/user/profile', [AuthController::class, 'updateProfile']);
+    Route::put('/user/password', [AuthController::class, 'resetPassword']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });

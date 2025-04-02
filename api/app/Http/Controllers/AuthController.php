@@ -6,6 +6,7 @@ use App\Models\Manager;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\User;
+use App\Services\FileManager;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -115,11 +116,78 @@ class AuthController extends Controller
         return response()->json(['user' => $req->user]);
     }
 
+    public function updateProfile(Request $req)
+    {
+        try {
+            $user = $req->user;
+            $validator = Validator::make($req->all(), [
+                'username' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+                'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+                'image' => 'nullable|image|max:2048'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+            $data = [
+                'username' => $req->input('username'),
+                'email' => $req->input('email'),
+                'phone' => $req->input('phone'),
+            ];
+
+            if ($req->hasFile("image")) {
+                $image = $req->file("image");
+                $fileManager = new FileManager();
+                $imagePath = $fileManager->uploadProfileImage($image);
+                if ($user->image) {
+                    $fileManager->deleteProfileImage($user->image);
+                }
+                $data["image"] = $imagePath;
+            }
+            $user->update($data);
+            return response()->json(['user' => $user]);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function test(Request $request)
+    {
+        $image = $request->file('image');
+        if ($request->hasFile('image')) {
+            return response()->json(['error' => 'threr is an image '], 422);
+        }
+        return response()->json([
+            'data' => $request->all(),
+            'files' => $image,
+        ], 422);
+    }
+
+    public function resetPassword(Request $req)
+    {
+        $user = $req->user;
+        $data = $req->all();
+        $validator = Validator::make($data, [
+            'old_password' => 'required|string',
+            'new_password' => 'required|string|min:8',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        if (!Hash::check($data["old_password"], $user->password)) {
+            return response()->json(['error' => 'Invalid old password'], 400);
+        }
+        $user->update([
+            "password" => Hash::make($data["new_password"]),
+        ]);
+        return response()->json(['message' => 'Password updated successfully']);
+    }
+
     public function logout()
     {
         try {
             JWTAuth::invalidate(JWTAuth::getToken());
-            return response()->json(['message' => 'Logged out successfully'],200)
+            return response()->json(['message' => 'Logged out successfully'], 200)
                 ->withCookie(cookie('token', '', -1, '/', null, false, true));
         } catch (JWTException $e) {
             return response()->json(['message' => 'Failed to logout'], 500);
