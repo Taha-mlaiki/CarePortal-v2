@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appointment;
 use App\Models\Cabinet;
 use App\Models\Manager;
 use App\Services\FileManager;
@@ -41,11 +42,43 @@ class CabinetController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'data' => $cabinets,
+            'data' => [
+                $cabinets,
+            ],
         ], 200);
     }
 
+    public function appointments(Request $request)
+    {
+        $user = $request->user;
 
+        $query = Appointment::with("patient")
+            ->whereHas("cabinet", function ($query) use ($user) {
+                $query->where("manager_id", $user->id);
+            });
+
+        if ($request->searchTerm) {
+            $query->whereHas("patient", function ($query) use ($request) {
+                $searchTerm = $request->searchTerm;
+                $query->where("username", "LIKE", "%{$searchTerm}%")
+                    ->orWhere("phone", "LIKE", "%{$searchTerm}%");
+            });
+        }
+
+        if ($request->status) {
+            $query->where("status", $request->status);
+        }
+
+        if ($request->date) {
+            $query->whereDate('appointment_date', '=', $request->date);
+        }
+
+
+        $appointments = $query->paginate();
+        return response()->json([
+            'data' => $appointments,
+        ], 200);
+    }
     public function store(Request $request)
     {
         try {
