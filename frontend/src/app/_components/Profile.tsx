@@ -96,10 +96,10 @@ export default function ProfileModal() {
       formData.append("username", username);
       formData.append("email", email);
       formData.append("phone", phone);
-      if (image) {
+      //@ts-expect-error the image must be any type,
+      if (image instanceof File) {
         formData.append("image", image);
       }
-
       // Send the request with FormData directly
       const res = await axios.post("/user/profile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
