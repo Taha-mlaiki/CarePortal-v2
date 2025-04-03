@@ -1,11 +1,25 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArchiveX, Calendar, Check, Hourglass, MoreHorizontal, Phone, X } from "lucide-react";
+import {
+  ArchiveX,
+  Calendar,
+  Check,
+  Hourglass,
+  MoreHorizontal,
+  Phone,
+  X,
+} from "lucide-react";
 import { ArrowUpDown } from "lucide-react";
 import { format } from "date-fns/format";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 // import {
 //   DropdownMenu,
 //   DropdownMenuContent,
@@ -17,17 +31,21 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 // import { useCancelAppoint } from "@/hooks/use-cancel-appoint";
 // import { toast } from "sonner";
 
-
 type Appointment = {
-  patient_name: string;
-  patient_phone: string;
-  date: Date; // Note: In your columns, you used "Date" (capital D), but it should match "date" here
+  id: number;
+  patient: {
+    username: string;
+    email: string;
+    phone: string;
+  };
+  appointment_date: string;
   status: string;
-  ticket: number; // Note: In your columns, you used "order" in the cell, but it should be "ticket"
+  ticket: number | null;
 };
 export const columns: ColumnDef<Appointment>[] = [
   {
     accessorKey: "patient_name",
+    accessorFn: (row) => row.patient.username,
     header: ({ column }) => {
       return (
         <div className="flex justify-center">
@@ -43,16 +61,16 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
     cell: ({ row }) => {
-      const data = row.original;
       return (
         <div className="flex justify-center">
-          <h1>{data.patient_name}</h1>
+          <h1>{row.getValue("patient_name")}</h1>
         </div>
       );
     },
   },
   {
     accessorKey: "patient_phone",
+    accessorFn: (row) => row.patient.phone,
     header: () => {
       return (
         <div className="flex items-center justify-center ">
@@ -62,16 +80,16 @@ export const columns: ColumnDef<Appointment>[] = [
       );
     },
     cell: ({ row }) => {
-      const data = row.original;
       return (
         <div className="flex justify-center">
-          <h1>{data.patient_phone}</h1>
+          <h1>{row.getValue("patient_phone")}</h1>
         </div>
       );
     },
   },
   {
-    accessorKey: "Date",
+    accessorKey: "date",
+    accessorFn: (row) => row.appointment_date,
     header: () => (
       <div className="flex items-center justify-center">
         <Calendar className="mr-2 w-3 h-3" />
@@ -79,10 +97,9 @@ export const columns: ColumnDef<Appointment>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const data = row.original;
       return (
         <div className="flex items-center justify-center gap-x-3">
-          {format(data.date, "MMMM/dd/yyyy")}
+          {format(row.getValue("date"), "MMMM/dd/yyyy")}
         </div>
       );
     },
@@ -92,36 +109,41 @@ export const columns: ColumnDef<Appointment>[] = [
     header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
       const data = row.original;
-      const status = ()=> { 
+      const status = () => {
         switch (data.status) {
           case "Pending":
             return (
-              <Badge variant="outline" className="bg-yellow-100 gap-x-1  text-yellow-800">
+              <Badge
+                variant="outline"
+                className="bg-yellow-100 gap-x-1  text-yellow-800"
+              >
                 <Hourglass className="w-3 h-3" />
                 Pending
               </Badge>
             );
           case "Scheduled":
             return (
-              <Badge variant="outline" className="bg-green-100 gap-x-1 text-green-800">
+              <Badge
+                variant="outline"
+                className="bg-green-100 gap-x-1 text-green-800"
+              >
                 <Check className="w-3 h-3 " />
                 Scheduled
               </Badge>
             );
-          case "Cancelled":
+          case "Canceled":
             return (
-              <Badge variant="outline" className="bg-red-100 gap-x-1 text-red-800">
+              <Badge
+                variant="outline"
+                className="bg-red-100 gap-x-1 text-red-800"
+              >
                 <X className="w-3 h-3 " />
-                Cancelled
+                Canceled
               </Badge>
             );
         }
-      }
-      return (
-      <div className="flex justify-center">
-        {status()}
-      </div>
-      )
+      };
+      return <div className="flex justify-center">{status()}</div>;
     },
   },
   {
@@ -129,7 +151,7 @@ export const columns: ColumnDef<Appointment>[] = [
     header: () => <div className="text-center">Ticket order</div>,
     cell: ({ row }) => {
       const data = row.original;
-      if (data.ticket === 0) {
+      if (data.ticket === 0 || data.ticket === null) {
         return <p className="text-neutral-600 text-center">No ticket</p>;
       } else {
         return (
@@ -140,21 +162,21 @@ export const columns: ColumnDef<Appointment>[] = [
   },
   {
     header: "Actions",
-    cell: ({row}) => {
-      const RenderCell = ()=>{
+    cell: ({ row }) => {
+      const RenderCell = () => {
         const data = row.original;
 
-        const onArchived = async ()=>{
-         console.log("isArchived",data.patient_name);
-        }
+        const onArchived = async () => {
+          console.log("isArchived", data.patient.username);
+        };
 
-        const onSchedule = async ()=>{
-          console.log("isScheduled",data.patient_name);
-        }
+        const onSchedule = async () => {
+          console.log("isScheduled", data.patient.username);
+        };
 
-        const complete = async ()=>{
-          console.log("isComplete",data.patient_name);
-        }
+        const complete = async () => {
+          console.log("isComplete", data.patient.username);
+        };
 
         return (
           <DropdownMenu>
@@ -165,8 +187,12 @@ export const columns: ColumnDef<Appointment>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="text-center">Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => console.log("View", data.patient_name)}>
+              <DropdownMenuLabel className="text-center">
+                Actions
+              </DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => console.log("View", data.patient.username)}
+              >
                 View details
               </DropdownMenuItem>
               {data.status === "Scheduled" && (
@@ -187,15 +213,14 @@ export const columns: ColumnDef<Appointment>[] = [
                   </div>
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem onClick={() => console.log("Cancel", data.patient_name)}>
+                <DropdownMenuItem onClick={() => console.log("Cancel")}>
                   <p className="text-red-500">Cancel</p>
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
-
-      }
+      };
       return RenderCell();
     },
   },

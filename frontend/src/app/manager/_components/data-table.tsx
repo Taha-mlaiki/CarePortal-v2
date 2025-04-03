@@ -1,17 +1,3 @@
-"use client"
-
-import {
-  ColumnDef,
-  flexRender,
-  SortingState,
-  getCoreRowModel,
-  ColumnFiltersState,
-  getPaginationRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-
 import {
   Table,
   TableBody,
@@ -19,140 +5,160 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ArrowLeft, ArrowRight, X } from "lucide-react"
-import { useState } from "react"
-import { FilterPopover } from "../appointments/_components/FilterPopover"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/table";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-}
+import { Dispatch, SetStateAction } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Check, Hourglass, Phone, User, X } from "lucide-react";
+import { FilterPopover } from "../appointments/_components/FilterPopover";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ParamsType } from "../appointments/page";
 
 type Appointment = {
-  patient_name: string;
-  patient_phone: string;
-  date: Date; // Note: In your columns, you used "Date" (capital D), but it should match "date" here
+  id: number;
+  patient: {
+    username: string;
+    email: string;
+    phone: string;
+  };
+  appointment_date: string;
   status: string;
-  ticket: number; // Note: In your columns, you used "order" in the cell, but it should be "ticket"
+  ticket: number | null;
 };
 
-export function DataTable<TData, TValue>({
-  columns,
+type TableProps = {
+  data: Appointment[];
+  isLoading: boolean;
+  params: ParamsType;
+  setParams: Dispatch<SetStateAction<ParamsType>>;
+};
+
+const status = (data: Appointment) => {
+  switch (data.status) {
+    case "Pending":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-yellow-100 gap-x-1  text-yellow-800"
+        >
+          <Hourglass className="w-3 h-3" />
+          Pending
+        </Badge>
+      );
+    case "Scheduled":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-green-100 gap-x-1 text-green-800"
+        >
+          <Check className="w-3 h-3 " />
+          Scheduled
+        </Badge>
+      );
+    case "Canceled":
+      return (
+        <Badge variant="outline" className="bg-red-100 gap-x-1 text-red-800">
+          <X className="w-3 h-3 " />
+          Canceled
+        </Badge>
+      );
+  }
+};
+
+export const DataTable = ({
   data,
-}: DataTableProps<TData, TValue>) {
-  const router = useRouter()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  )
-
-  const [filteredData,setFilteredData] = useState(data)
-
-
-  const table = useReactTable({
-    data:filteredData,
-    columns,
-    getPaginationRowModel: getPaginationRowModel(),
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
-  })
-
-   // Clear all filters
-   const clearFilter = () => {
-    router.push(window.location.pathname); // Navigate to the base URL to clear all search params
-  };
+  isLoading,
+  params,
+  setParams,
+}: TableProps) => {
   return (
     <div>
       <div className="flex items-center  gap-x-3 justify-between py-4">
         <Input
           placeholder={`Search by patient name...`}
-          value={(table.getColumn("patient_name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("patient_name")?.setFilterValue(event.target.value)
+          value={params.searchTerm}
+          onChange={(e) =>
+            setParams((prev: ParamsType) => ({
+              ...prev,
+              searchTerm: e.target.value,
+            }))
           }
           className="max-w-sm"
         />
         <div className="flex gap-x-2 item-center">
-          <Button 
-          onClick={()=> clearFilter()}
-          size="icon" variant="destructive">
-              <X />
+          <Button
+            onClick={() =>
+              setParams({ status: "", date: null, searchTerm: "" })
+            }
+            size="icon"
+            variant="destructive"
+          >
+            <X />
           </Button>
-          <FilterPopover allData={data as Appointment[]} appointments={filteredData as Appointment[]} setAppointments={setFilteredData} />
+          <FilterPopover params={params} setParams={setParams} />
         </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>
+              <div className="flex items-center justify-start ">
+                <User className="mr-2 h-4 w-4" />
+                Username
+              </div>
+            </TableHead>
+            <TableHead>
+              <div className="flex items-center justify-start ">
+                <Phone className="mr-2 h-4 w-4" />
+                Phone
+              </div>
+            </TableHead>
+            <TableHead>
+              <div className="flex items-center justify-start">
+                <Calendar className="mr-2 w-4 h-4" />
+                Appointment Date
+              </div>
+            </TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>ticket</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading
+            ? Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-6 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-20" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex justify-between mt-2 px-3">
-            <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            >
-              <ArrowLeft className="text-brand"/>
-            </Button>
-            <Button variant="outline" size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            >
-            <ArrowRight className="text-brand" />
-            </Button>
-      </div>
+            : data.map((appointment) => (
+                <TableRow key={appointment.id}>
+                  <TableCell className="font-medium">
+                    {appointment.patient.username}
+                  </TableCell>
+                  <TableCell>{appointment.patient.phone}</TableCell>
+                  <TableCell>{appointment.appointment_date}</TableCell>
+                  <TableCell>{status(appointment)}</TableCell>
+                  <TableCell>{appointment.ticket || "No ticket"}</TableCell>
+                </TableRow>
+              ))}
+        </TableBody>
+      </Table>
     </div>
-    
-  )
-}
+  );
+};
