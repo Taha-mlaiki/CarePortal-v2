@@ -45,6 +45,17 @@ class AppointmentController extends Controller
         ]);
     }
 
+    public function cancel(Request $request, $id)
+    {
+        $appointment = Appointment::where('patient_id', $request->user->id)->findOrFail($id);
+        if ($appointment->status !== 'Pending') {
+            return response()->json(['error' => 'Only Pending appointments can be cancelled'], 400);
+        }
+        $appointment->update(['status' => 'Canceled']);
+
+        return response()->json(['success' => 'Appointment cancelled successfully'], 200);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
