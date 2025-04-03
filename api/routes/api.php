@@ -23,12 +23,13 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
 
     Route::middleware([isManager::class])->group(function () {
-        Route::get("/manager/cabinet",[CabinetController::class,"managerCabinet"]);
-        Route::post("/manager/cabinet",[CabinetController::class,"updateCabinet"]);
-        Route::post("/cabinets",[CabinetController::class,"store"]);
-        Route::get("/cabinets/today-closed",[CabinetController::class,"getTodayClosed"]);
-        Route::post("/cabinets/today-closed",[CabinetController::class,"setTodayClosed"]);
-        Route::get("/cabinets/appointments",[CabinetController::class,"appointments"]);
+        Route::post("/manager/cabinet/dates", [CabinetController::class, "setClosing"]);
+        Route::get("/manager/cabinet", [CabinetController::class, "managerCabinet"]);
+        Route::post("/manager/cabinet", [CabinetController::class, "updateCabinet"]);
+        Route::post("/cabinets", [CabinetController::class, "store"]);
+        Route::get("/cabinets/today-closed", [CabinetController::class, "getTodayClosed"]);
+        Route::post("/cabinets/today-closed", [CabinetController::class, "setTodayClosed"]);
+        Route::get("/cabinets/appointments", [CabinetController::class, "appointments"]);
     });
 
     Route::middleware([isPatient::class])->group(function () {
@@ -53,6 +54,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     });
 
 
+    Route::get("/manager/cabinet/dates", [CabinetController::class, "getClosing"]);
     Route::post('/user/profile', [AuthController::class, 'updateProfile']);
     Route::put('/user/password', [AuthController::class, 'resetPassword']);
     Route::get('/user', [AuthController::class, 'user']);

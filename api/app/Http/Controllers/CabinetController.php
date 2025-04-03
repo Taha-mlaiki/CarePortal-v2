@@ -19,6 +19,7 @@ class CabinetController extends Controller
         $this->fileManager = $fileManager;
     }
 
+
     public function index(Request $request)
     {
         $cabinets = Cabinet::select([
@@ -42,9 +43,7 @@ class CabinetController extends Controller
             ->paginate(10);
 
         return response()->json([
-            'data' => [
-                $cabinets,
-            ],
+            'data' => $cabinets,
         ], 200);
     }
 
@@ -284,6 +283,38 @@ class CabinetController extends Controller
                 'success' => 'Cabinet updated successfully',
                 'cabinet' => $cabinet,
             ], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+    public function getClosing(Request $request)
+    {
+        $user = $request->user;
+        $cabinet = Cabinet::select([
+            'closed_days',
+            'day_of_week',
+            'is_today_closed'
+        ])->where('manager_id', $user->id)->first();
+        if (!$cabinet) {
+            return response()->json(['error' => 'Cabinet not found'], 404);
+        }
+        return response()->json([
+            'cabinet' => $cabinet,
+        ], 200);
+    }
+    public function setClosing(Request $request)
+    {
+        try {
+            $user = $request->user;
+            $cabinet = Cabinet::where('manager_id', $user->id)->first();
+            if (!$cabinet) {
+                return response()->json(['error' => 'Cabinet not found'], 404);
+            }
+            $cabinet->day_of_week = $request->day_of_week;
+            $cabinet->closed_days = $request->closed_days;
+            $cabinet->save();
+            return response()->json(['success' => 'Cabinet closed for today'], 200);
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
