@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
 import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,7 +27,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X } from "lucide-react";
-import Header from "../_components/Header"; // Adjust path as needed
+import Header from "../_components/Header";
+import axios from "@/lib/axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { SubmitButton } from "@/components/SubmitButton";
+import { imageSrc } from "@/app/patient/cabinets/_components/CabinetCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Zod schema for form validation
 const cabinetSchema = z.object({
@@ -72,24 +76,9 @@ const cabinetSchema = z.object({
 });
 
 type CabinetFormValues = z.infer<typeof cabinetSchema>;
-type ImageFile = { file: File; preview: string; id: string };
+type ImageFile = { file?: File; preview: string; id: string };
 
-// Mock initial data
-const mockCabinetData: CabinetFormValues = {
-  name: "Wellness Central",
-  email: "sarah.johnson@medclinic.com",
-  description:
-    "Welcome to Wellness Central where our team of expert medical professionals is dedicated to providing you with the best possible care. We specialize in and are committed to making your experience as comfortable and stress-free as possible. Please don't hesitate to contact us if you have any questions or concerns.",
-  phone: "555-123-4567",
-  doctor_name: "Sarah Central",
-  speciality: "Cardiologist",
-  city: "San Francisco",
-  location_link: "https://maps.google.com/?q=MedClinic+San+Francisco",
-  address: "123 Health Avenue, San Francisco, CA 94107",
-  images: [],
-  thumbnail: null, // Changed to null to match schema expectation
-};
-
+// Specialty options
 const specialtyOptions = [
   "Cardiologist",
   "Dentist",
@@ -103,16 +92,92 @@ const specialtyOptions = [
   "Other",
 ];
 
+// API functions
+const fetchCabinetInfo = async () => {
+  const res = await axios.get("/manager/cabinet");
+  const cabinet = res.data.cabinet;
+  return {
+    ...cabinet,
+    images: cabinet.images ? JSON.parse(cabinet.images) : [],
+  };
+};
+
+const updateCabinetInfo = async (data: FormData) => {
+  const res = await axios.post("/manager/cabinet", data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  const cabinet = res.data.cabinet;
+  return {
+    ...cabinet,
+    images: cabinet.images ? JSON.parse(cabinet.images) : [],
+  };
+};
+
 export default function CabinetSettings() {
   const [isEditing, setIsEditing] = useState(false);
   const [cabinetImages, setCabinetImages] = useState<ImageFile[]>([]);
   const [thumbnailImage, setThumbnailImage] = useState<ImageFile | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
+  // Fetch cabinet data
+  const { data, isLoading } = useQuery({
+    queryFn: fetchCabinetInfo,
+    queryKey: ["manager_cabinet"],
+  });
+
+  // Mutation for updating cabinet
+  const { mutate, isPending } = useMutation({
+    mutationFn: updateCabinetInfo,
+    onSuccess: (updatedData) => {
+      queryClient.setQueryData(["manager_cabinet"], updatedData); // Update cache immediately
+      toast.success("Cabinet updated successfully!", {
+        description: "Your changes have been saved.",
+      });
+      setIsEditing(false);
+    },
+    onError: (err) => {
+      toast.error("Failed to update cabinet", {
+        description: err.message,
+      });
+    },
+  });
+
+  // Initialize form
   const form = useForm<CabinetFormValues>({
     resolver: zodResolver(cabinetSchema),
-    defaultValues: mockCabinetData,
+    defaultValues: {
+      name: "",
+      description: "",
+      doctor_name: "",
+      email: "",
+      phone: "",
+      speciality: "",
+      city: "",
+      location_link: "",
+      address: "",
+      images: [],
+      thumbnail: null,
+    },
   });
+
+  // Sync form and images when data loads
+  useEffect(() => {
+    if (data) {
+      form.reset(data);
+      setCabinetImages(
+        data.images.map((path: string) => ({
+          preview: imageSrc + path,
+          id: crypto.randomUUID(),
+        }))
+      );
+      if (data.thumbnail) {
+        setThumbnailImage({
+          preview: imageSrc + data.thumbnail,
+          id: crypto.randomUUID(),
+        });
+      }
+    }
+  }, [data, form]);
 
   // Image handling functions
   const handleCabinetImagesUpload = (
@@ -125,7 +190,9 @@ export default function CabinetSettings() {
         id: crypto.randomUUID(),
       }));
       setCabinetImages((prev) => [...prev, ...newImages]);
-      form.setValue("images", [...cabinetImages, ...newImages]);
+      form.setValue("images", [...cabinetImages, ...newImages], {
+        shouldValidate: true,
+      });
     }
   };
 
@@ -138,48 +205,78 @@ export default function CabinetSettings() {
         id: crypto.randomUUID(),
       };
       setThumbnailImage(newThumbnail);
-      form.setValue("thumbnail", newThumbnail);
+      form.setValue("thumbnail", newThumbnail, { shouldValidate: true });
     }
   };
 
   const removeCabinetImage = (id: string) => {
     const updatedImages = cabinetImages.filter((img) => img.id !== id);
     setCabinetImages(updatedImages);
-    form.setValue("images", updatedImages);
+    form.setValue("images", updatedImages, { shouldValidate: true });
   };
 
   const removeThumbnailImage = () => {
     setThumbnailImage(null);
-    form.setValue("thumbnail", null);
+    form.setValue("thumbnail", null, { shouldValidate: true });
   };
 
   // Form submission
-  const onSubmit = async (data: CabinetFormValues) => {
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-    console.log("Updated Data:", data);
-    toast.success("Cabinet updated successfully!", {
-      description: "Your changes have been saved.",
-    });
-    setIsSubmitting(false);
-    setIsEditing(false);
-  };
+  const onSubmit = async (values: CabinetFormValues) => {
+    const formData = new FormData();
 
-  // Reset form on cancel
-  const handleCancel = () => {
-    form.reset(mockCabinetData);
-    setCabinetImages([]);
-    setThumbnailImage(null);
-    setIsEditing(false);
+    formData.append("id", data.id);
+    // Append text fields
+    Object.entries(values).forEach(([key, value]) => {
+      if (key !== "images" && key !== "thumbnail") {
+        formData.append(key, value as string);
+      }
+    });
+
+    // Append cabinet images
+    cabinetImages.forEach((img, index) => {
+      if (img.file) {
+        formData.append(`images[${index}]`, img.file);
+      } else {
+        formData.append(
+          `existing_images[${index}]`,
+          img.preview.replace(imageSrc, "")
+        );
+      }
+    });
+
+    // Append thumbnail
+    if (values.thumbnail?.file) {
+      formData.append("thumbnail", values.thumbnail.file);
+    } else if (values.thumbnail && values.thumbnail.preview) {
+      formData.append(
+        "existing_thumbnail",
+        values.thumbnail.preview.replace(imageSrc, "")
+      );
+    }
+    mutate(formData);
   };
 
   // Clean up object URLs
   useEffect(() => {
     return () => {
-      cabinetImages.forEach((img) => URL.revokeObjectURL(img.preview));
-      if (thumbnailImage) URL.revokeObjectURL(thumbnailImage.preview);
+      cabinetImages.forEach((img) => {
+        if (img.file) URL.revokeObjectURL(img.preview);
+      });
+      if (thumbnailImage?.file) URL.revokeObjectURL(thumbnailImage.preview);
     };
   }, [cabinetImages, thumbnailImage]);
+
+  if (isLoading) {
+    return (
+      <div className="lg:ml-64 min-h-screen p-5 md:p-10">
+        <Header
+          title="Manage Your Cabinet"
+          description="Update your personal and cabinet information"
+        />
+        <Skeleton className="w-full max-w-4xl mx-auto rounded-lg h-[50vh]" />
+      </div>
+    );
+  }
 
   return (
     <div className="lg:ml-64 min-h-screen p-5 md:p-10">
@@ -212,18 +309,18 @@ export default function CabinetSettings() {
                       />
                     ) : (
                       <div className="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center text-2xl font-bold text-blue-800">
-                        {mockCabinetData.doctor_name[0]}{" "}
+                        {data?.name[0] || "C"}
                       </div>
                     )}
                     <div>
                       <h2 className="text-xl font-semibold text-gray-800">
-                        {mockCabinetData.doctor_name}{" "}
+                        {data?.doctor_name || "N/A"}
                       </h2>
                       <p className="text-gray-600">
-                        {mockCabinetData.speciality} • {mockCabinetData.city}{" "}
+                        {data?.speciality || ""} • {data?.city || ""}
                       </p>
                       <p className="text-gray-700 font-medium">
-                        {mockCabinetData.name}
+                        {data?.name || "N/A"}
                       </p>
                     </div>
                   </div>
@@ -233,33 +330,39 @@ export default function CabinetSettings() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
                   <p>
-                    <strong>Email:</strong> {mockCabinetData.email}{" "}
+                    <strong>Email:</strong> {data?.email || "N/A"}
                   </p>
                   <p>
-                    <strong>Phone:</strong> {mockCabinetData.phone}{" "}
+                    <strong>Phone:</strong> {data?.phone || "N/A"}
                   </p>
                   <p>
-                    <strong>City:</strong> {mockCabinetData.city}{" "}
+                    <strong>City:</strong> {data?.city || "N/A"}
                   </p>
                   <p>
-                    <strong>Address:</strong> {mockCabinetData.address}{" "}
+                    <strong>Address:</strong> {data?.address || "N/A"}
                   </p>
                   <p className="md:col-span-2">
                     <strong>Location:</strong>{" "}
-                    <a
-                      href={mockCabinetData.location_link}
-                      target="_blank"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {mockCabinetData.location_link}{" "}
-                    </a>
+                    {data?.location_link ? (
+                      <a
+                        href={data.location_link}
+                        target="_blank"
+                        className="text-blue-600 hover:underline"
+                      >
+                        {data.location_link}
+                      </a>
+                    ) : (
+                      "N/A"
+                    )}
                   </p>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     Description
                   </h3>
-                  <p className="text-gray-600">{mockCabinetData.description}</p>{" "}
+                  <p className="text-gray-600">
+                    {data?.description || "No description available"}
+                  </p>
                 </div>
                 {thumbnailImage && (
                   <div className="my-3">
@@ -549,18 +652,14 @@ export default function CabinetSettings() {
                   <div className="flex justify-end gap-4">
                     <Button
                       variant="outline"
-                      onClick={handleCancel}
-                      disabled={isSubmitting}
+                      onClick={() => setIsEditing(false)}
+                      disabled={isPending}
                     >
                       Cancel
                     </Button>
-                    <Button
-                      variant="brand"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Saving..." : "Save Changes"}
-                    </Button>
+                    <SubmitButton variant="brand" disabled={isPending}>
+                      {isPending ? "Saving..." : "Save Changes"}
+                    </SubmitButton>
                   </div>
                 </form>
               </Form>
