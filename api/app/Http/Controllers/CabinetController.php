@@ -142,6 +142,36 @@ class CabinetController extends Controller
     }
 
 
+    public function getTodayClosed(Request $request)
+    {
+        $user = $request->user;
+        $cabinet = Cabinet::where('manager_id', $user->id)->first();
+        if (!$cabinet) {
+            return response()->json(['error' => 'Cabinet not found'], 404);
+        }
+        return response()->json([
+            'is_today_closed' => $cabinet->is_today_closed,
+        ], 200);
+    }
+
+
+
+    public function setTodayClosed(Request $request) {
+        try {
+            $user = $request->user;
+            $cabinet = Cabinet::where('manager_id', $user->id)->first();
+            if (!$cabinet) {
+                return response()->json(['error' => 'Cabinet not found'], 404);
+            }
+            $cabinet->is_today_closed = $request->is_today_closed;
+            $cabinet->save();
+            return response()->json(['success' => 'Cabinet closed for today'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
+
 
     /**
      * Display the specified resource.
