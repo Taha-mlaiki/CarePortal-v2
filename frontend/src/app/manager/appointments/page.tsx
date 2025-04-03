@@ -42,7 +42,7 @@ const Page = () => {
     <div
       className={cn(
         "transition-all duration-200 ease-in-out",
-        "lg:ml-64 min-h-screen p-5 md:p-10"
+        "lg:ml-64 min-h-screen p-5 md:px-10"
       )}
     >
       <Header
