@@ -23,8 +23,32 @@ import {
 import axios from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";
+import AppointmentDetails from "./_components/AppointmentDetails";
 
-const fetchAppointments = async ({ page = 1, search = "", status = "all", date = "" }) => {
+export type AppointmentType = {
+  id: number;
+  appointment_date: Date;
+  status: string;
+  reason: string;
+  patient: {
+    id: number;
+    username: string;
+    email: string;
+    phone: string;
+  };
+  cabinet: {
+    id: number;
+    name: string;
+    address: string;
+  };
+};
+
+const fetchAppointments = async ({
+  page = 1,
+  search = "",
+  status = "all",
+  date = "",
+}) => {
   const res = await axios.get("/appointments", {
     params: {
       page,
@@ -55,14 +79,20 @@ const AppointmentStatusPage = () => {
     switch (status) {
       case "Pending":
         return (
-          <Badge variant="outline" className="bg-yellow-100 gap-x-1 text-yellow-800">
+          <Badge
+            variant="outline"
+            className="bg-yellow-100 gap-x-1 text-yellow-800"
+          >
             <Hourglass className="w-3 h-3" />
             Pending
           </Badge>
         );
       case "Confirmed":
         return (
-          <Badge variant="outline" className="bg-green-100 gap-x-1 text-green-800">
+          <Badge
+            variant="outline"
+            className="bg-green-100 gap-x-1 text-green-800"
+          >
             <Check className="w-3 h-3" />
             Scheduled
           </Badge>
@@ -154,8 +184,11 @@ const AppointmentStatusPage = () => {
         <Loader className="w-14 h-14 animate-spin text-neutral-700 mx-auto" />
       ) : appointments.length > 0 ? (
         <div className="space-y-4">
-          {appointments.map((appointment: any) => (
-            <Card key={appointment.id} className="hover:shadow-md transition-shadow">
+          {appointments.map((appointment: AppointmentType) => (
+            <Card
+              key={appointment.id}
+              className="hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
                   <div className="flex items-center space-x-4">
@@ -163,7 +196,9 @@ const AppointmentStatusPage = () => {
                       <Calendar className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{appointment.cabinet.name}</h3>
+                      <h3 className="font-medium text-gray-900">
+                        {appointment.cabinet.name}
+                      </h3>
                       <p className="text-sm text-gray-500">
                         {format(appointment.appointment_date, "dd/MM/yyyy")}
                       </p>
@@ -171,9 +206,11 @@ const AppointmentStatusPage = () => {
                   </div>
                   <div className="flex items-center justify-between md:justify-end space-x-4">
                     {getStatusBadge(appointment.status)}
-                    <Button variant="ghost" size="icon">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    <AppointmentDetails appointment={appointment}>
+                      <Button variant="ghost" size="icon">
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </AppointmentDetails>
                   </div>
                 </div>
               </CardContent>
