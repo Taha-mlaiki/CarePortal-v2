@@ -9,14 +9,24 @@ import {
 
 import { Dispatch, SetStateAction } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Check, Hourglass, Phone, User, X } from "lucide-react";
+import {
+  Calendar,
+  Check,
+  FolderCheck,
+  Hourglass,
+  Phone,
+  User,
+  X,
+} from "lucide-react";
 import { FilterPopover } from "../appointments/_components/FilterPopover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ParamsType } from "../appointments/page";
+import AppointmentActions from "../appointments/_components/AppointmentActions";
+import { format } from "date-fns/format";
 
-type Appointment = {
+export type Appointment = {
   id: number;
   patient: {
     username: string;
@@ -26,6 +36,8 @@ type Appointment = {
   appointment_date: string;
   status: string;
   ticket: number | null;
+  reason: string; // Added missing property
+  created_at: Date;
 };
 
 type TableProps = {
@@ -62,6 +74,16 @@ const status = (data: Appointment) => {
         <Badge variant="outline" className="bg-red-100 gap-x-1 text-red-800">
           <X className="w-3 h-3 " />
           Canceled
+        </Badge>
+      );
+    case "Completed":
+      return (
+        <Badge
+          variant="outline"
+          className="bg-violet-100 gap-x-1 text-violet-700"
+        >
+          <FolderCheck className="w-3 h-3 " />
+          Completed
         </Badge>
       );
   }
@@ -121,8 +143,15 @@ export const DataTable = ({
                 Appointment Date
               </div>
             </TableHead>
+            <TableHead>
+              <div className="flex items-center justify-start">
+                <Calendar className="mr-2 w-4 h-4" />
+                Created At
+              </div>
+            </TableHead>
             <TableHead>Status</TableHead>
             <TableHead>ticket</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -144,6 +173,12 @@ export const DataTable = ({
                   <TableCell className="text-right">
                     <Skeleton className="h-6 w-16" />
                   </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
                 </TableRow>
               ))
             : data.map((appointment) => (
@@ -152,9 +187,23 @@ export const DataTable = ({
                     {appointment.patient.username}
                   </TableCell>
                   <TableCell>{appointment.patient.phone}</TableCell>
-                  <TableCell>{appointment.appointment_date}</TableCell>
+                  <TableCell>
+                    {format(
+                      new Date(appointment.appointment_date),
+                      " MMM d, yyyy"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {format(
+                      new Date(appointment.created_at),
+                      " MMM d, yyyy | h:mm a"
+                    )}
+                  </TableCell>
                   <TableCell>{status(appointment)}</TableCell>
                   <TableCell>{appointment.ticket || "No ticket"}</TableCell>
+                  <TableCell>
+                    <AppointmentActions appointment={appointment} />
+                  </TableCell>
                 </TableRow>
               ))}
         </TableBody>
