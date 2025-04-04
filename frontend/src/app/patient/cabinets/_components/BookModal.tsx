@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, CheckCircle } from "lucide-react";
+import { CalendarIcon, CheckCircle, Loader } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -37,18 +37,22 @@ import { toast } from "sonner";
 import { SubmitButton } from "@/components/SubmitButton";
 
 const formSchema = z.object({
-  bookingDate: z.date().refine((val) => val.getDate() >= new Date().getDate(), {
-    message: "Booking date must be in the future",
+  bookingDate: z.date({
+    required_error: "Please select a booking date",
+  }).refine((val) => val >= new Date(new Date().setHours(0, 0, 0, 0)), {
+    message: "Booking date must be today or in the future",
   }),
   reason: z
     .string()
-    .max(150, {
-      message: "Reason must be at most 150 characters",
-    })
-    .min(20, {
-      message: "Reason must be at leat 20 characters",
-    }),
+    .max(150, { message: "Reason must be at most 150 characters" })
+    .min(20, { message: "Reason must be at least 20 characters" }),
 });
+
+type UnavailableDates = {
+  closed_days: Date[];
+  day_of_week: number[];
+  is_today_closed: Date | null;
+};
 
 const BookModal = ({
   cabinetName,
@@ -60,32 +64,66 @@ const BookModal = ({
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  // Initialize the form with react-hook-form and zod
+  const [loading, setLoading] = useState(false);
+  const [unavailableDates, setUnavailableDates] = useState<UnavailableDates>({
+    closed_days: [],
+    day_of_week: [],
+    is_today_closed: null,
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      bookingDate: new Date(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bookingDate: null as any, // Type hack for initial null (Zod will enforce date on submit)
       reason: "",
     },
   });
 
+  useEffect(() => {
+    const fetchClosedDates = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`/cabinets/${id}/dates`);
+        const { closed_days, day_of_week, is_today_closed } =
+          res.data.unavailable_dates;
+        setUnavailableDates({
+          closed_days: closed_days
+            ? closed_days.map((d: string) => new Date(d))
+            : [],
+          day_of_week: day_of_week || [],
+          is_today_closed: is_today_closed ? new Date(is_today_closed) : null,
+        });
+      } catch (error) {
+        console.error("Failed to fetch unavailable dates:", error);
+        toast.error("Could not load unavailable dates");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchClosedDates();
+  }, [id, open]);
+
   const { isSubmitting } = form.formState;
-  // Handle form submission
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const res = await axios.post("/appointments", {
-      cabinet_id: id,
-      appointment_date: data.bookingDate,
-      reason: data.reason,
-    });
-    if (res.status === 201) {
-      form.reset();
-      setBookingSuccess(true);
-      setTimeout(() => {
-        setOpenDialog(false);
-        setBookingSuccess(false);
-      }, 3000);
-    } else {
-      toast.error(res.data.error);
+    try {
+      const res = await axios.post("/appointments", {
+        cabinet_id: id,
+        appointment_date: data.bookingDate.toISOString(), // Safe: bookingDate is guaranteed Date
+        reason: data.reason,
+      });
+      if (res.status === 201) {
+        form.reset();
+        setBookingSuccess(true);
+        setTimeout(() => {
+          setOpenDialog(false);
+          setBookingSuccess(false);
+        }, 3000);
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to book appointment");
     }
   };
 
@@ -111,8 +149,8 @@ const BookModal = ({
               Booking Successful!
             </h3>
             <p className="mt-2 text-gray-600">
-              Your appointment has been Sent to cabinet manager. You will recive
-              an email confirmation or cancelation from the manager
+              Your appointment has been sent to the cabinet manager. You will
+              receive an email confirmation or cancellation from the manager.
             </p>
           </div>
         ) : (
@@ -131,17 +169,15 @@ const BookModal = ({
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
+                            variant="outline"
                             className={cn(
                               "pl-3 w-full text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
+                            {field.value
+                              ? format(field.value, "PPP")
+                              : "Pick a date"}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
@@ -150,16 +186,35 @@ const BookModal = ({
                         className="w-auto p-0 z-[1000]"
                         align="start"
                       >
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={(date) => {
-                            setOpen(false);
-                            field.onChange(date);
-                          }}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                        />
+                        {loading ? (
+                          <div className="flex max-w-md items-center justify-center h-[100px] w-full">
+                            <Loader className="mx-auto animate-spin w-10 h-10" />
+                          </div>
+                        ) : (
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={(date) => {
+                              setOpen(false);
+                              field.onChange(date);
+                            }}
+                            disabled={(date) =>
+                              date <
+                                new Date(new Date().setHours(0, 0, 0, 0)) ||
+                              unavailableDates.day_of_week.includes(
+                                date.getDay()
+                              ) ||
+                              (unavailableDates.is_today_closed &&
+                                unavailableDates.is_today_closed.toDateString() ===
+                                  date.toDateString()) ||
+                              unavailableDates.closed_days.some(
+                                (offDate) =>
+                                  offDate.toDateString() === date.toDateString()
+                              )
+                            }
+                            initialFocus
+                          />
+                        )}
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
