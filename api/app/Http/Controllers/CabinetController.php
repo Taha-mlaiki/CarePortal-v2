@@ -140,6 +140,26 @@ class CabinetController extends Controller
         }
     }
 
+    public function getunavailableDates($id)
+    {
+        $cabinet = Cabinet::select([
+            "closed_days",
+            "day_of_week",
+            "is_today_closed"
+        ])->where("id", $id)->first();
+        if (!$cabinet) {
+            return response()->json(['error' => 'Cabinet not found'], 404);
+        }
+        $closedDays = json_decode($cabinet->closed_days, true);
+        $dayOfWeek = json_decode($cabinet->day_of_week, true);
+        $unavailableDates = [
+            'closed_days' => $closedDays,
+            'day_of_week' => $dayOfWeek,
+            'is_today_closed' => $cabinet->is_today_closed,
+        ];
+
+        return response()->json(['unavailable_dates' => $unavailableDates], 200);
+    }
 
     public function getTodayClosed(Request $request)
     {
