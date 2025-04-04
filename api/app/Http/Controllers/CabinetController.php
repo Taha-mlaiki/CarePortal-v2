@@ -52,6 +52,8 @@ class CabinetController extends Controller
         $user = $request->user;
 
         $query = Appointment::with("patient")
+            ->where("is_archived", 0)
+            ->orderBy("appointment_date", "desc")
             ->whereHas("cabinet", function ($query) use ($user) {
                 $query->where("manager_id", $user->id);
             });
@@ -160,6 +162,8 @@ class CabinetController extends Controller
 
         return response()->json(['unavailable_dates' => $unavailableDates], 200);
     }
+
+
 
     public function getTodayClosed(Request $request)
     {
@@ -340,13 +344,7 @@ class CabinetController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+
 
     /**
      * Remove the specified resource from storage.

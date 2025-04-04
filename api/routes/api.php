@@ -31,6 +31,10 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get("/cabinets/today-closed", [CabinetController::class, "getTodayClosed"]);
         Route::post("/cabinets/today-closed", [CabinetController::class, "setTodayClosed"]);
         Route::get("/cabinets/appointments", [CabinetController::class, "appointments"]);
+        Route::post("/cabinets/appointments/{id}/cancel", [AppointmentController::class, "cancelAppointment"]);
+        Route::post("/cabinets/appointments/{id}/schedule", [AppointmentController::class, "scheduleAppointment"]);
+        Route::post("/cabinets/appointments/{id}/complete", [AppointmentController::class, "completeAppointment"]);
+        Route::post("/cabinets/appointments/{id}/archive", [AppointmentController::class, "archiveAppointment"]);
     });
 
     Route::middleware([isPatient::class])->group(function () {
@@ -54,8 +58,8 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::delete('/patient/cabinets/comments/{id}', [CommentController::class, 'destroy']);
         Route::get("/patient/cabinets/commentable", [CommentController::class, "commentable"]);
     });
-
-
+    
+    
     Route::post('/user/profile', [AuthController::class, 'updateProfile']);
     Route::put('/user/password', [AuthController::class, 'resetPassword']);
     Route::get('/user', [AuthController::class, 'user']);

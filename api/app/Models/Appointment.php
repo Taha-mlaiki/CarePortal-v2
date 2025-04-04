@@ -12,7 +12,8 @@ class Appointment extends Model
         "appointment_date",
         "status",
         "reason",
-        "ticket"
+        "ticket",
+        "is_archived"
     ];
     public function cabinet()
     {
@@ -20,6 +21,6 @@ class Appointment extends Model
     }
     public function patient()
     {
-        return $this->belongsTo(Patient::class,"patient_id");
+        return $this->belongsTo(Patient::class, "patient_id");
     }
 }
