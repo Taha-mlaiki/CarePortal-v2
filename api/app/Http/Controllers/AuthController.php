@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Knock\KnockSdk\Client;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -58,6 +59,14 @@ class AuthController extends Controller
             }
 
             $token = JWTAuth::fromUser($user);
+
+            $knockClient = new Client(
+                env('KNOCK_API_SECRET')
+            );
+            $knockClient->users()->identify($user->id, [
+                'username' => $user->username,
+                'email' => $user->email,
+            ]);
 
             return response()->json([
                 'role' => $request->role,
@@ -119,6 +128,7 @@ class AuthController extends Controller
     public function updateProfile(Request $req)
     {
         try {
+
             $user = $req->user;
             $validator = Validator::make($req->all(), [
                 'username' => 'required|string|max:255',
@@ -144,6 +154,7 @@ class AuthController extends Controller
                 }
                 $data["image"] = $imagePath;
             }
+
             $user->update($data);
             return response()->json(['user' => $user]);
         } catch (\Throwable $th) {
@@ -151,17 +162,6 @@ class AuthController extends Controller
         }
     }
 
-    public function test(Request $request)
-    {
-        $image = $request->file('image');
-        if ($request->hasFile('image')) {
-            return response()->json(['error' => 'threr is an image '], 422);
-        }
-        return response()->json([
-            'data' => $request->all(),
-            'files' => $image,
-        ], 422);
-    }
 
     public function resetPassword(Request $req)
     {

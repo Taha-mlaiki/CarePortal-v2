@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Cabinet;
+use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Knock\KnockSdk\Client;
 
 class AppointmentController extends Controller
 {
@@ -39,7 +41,9 @@ class AppointmentController extends Controller
         }
 
         $perPage = $request->query('per_page', 10);
-        $appointments = $query->paginate($perPage);
+        $appointments = $query->orderBy('appointment_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
 
         return response()->json([
             'appointments' => $appointments,
@@ -127,44 +131,9 @@ class AppointmentController extends Controller
 
     public function store(Request $request)
     {
-        // Validate input
         $validator = Validator::make($request->all(), [
             'cabinet_id' => 'required|exists:cabinets,id',
-            'appointment_date' => [
-                'required',
-                'date',
-                function ($attribute, $value, $fail) use ($request) {
-                    $date = \Carbon\Carbon::parse($value);
-                    $today = \Carbon\Carbon::today();
-
-                    // Check if date is in the past
-                    if ($date->lessThan($today)) {
-                        $fail('Appointment date must be today or in the future.');
-                    }
-
-                    // Fetch cabinet unavailable dates
-                    $cabinet = Cabinet::find($request->input('cabinet_id'));
-                    if (!$cabinet) {
-                        $fail('Cabinet not found.');
-                        return;
-                    }
-
-                    $dayOfWeek = json_decode($cabinet->day_of_week, true) ?? [];
-                    $closedDays = json_decode($cabinet->closed_days, true) ?? [];
-                    $isTodayClosed = $cabinet->is_today_closed;
-
-                    // Check specific closed days
-                    $dateString = $date->toDateString();
-                    if (in_array($dateString, $closedDays)) {
-                        $fail('This date is marked as closed.');
-                    }
-
-                    // Check if today is closed (assuming is_today_closed is a date)
-                    if ($isTodayClosed && \Carbon\Carbon::parse($isTodayClosed)->isSameDay($date)) {
-                        $fail('The cabinet is closed on this date.');
-                    }
-                },
-            ],
+            'appointment_date' => 'required |date',
             'reason' => 'required|string|min:20|max:150',
         ]);
 
@@ -173,22 +142,33 @@ class AppointmentController extends Controller
         }
 
         try {
-            $patient_id = $request->user()->id; // Assuming JWT auth
+
+            $patient_id = $request->user->id; // Assuming JWT auth
             $cabinet = Cabinet::find($request->cabinet_id);
 
             if (!$cabinet) {
                 return response()->json(['error' => 'Cabinet not found'], 404);
             }
+            $manager = Manager::whereHas("cabinet", function ($query) use ($cabinet) {
+                $query->where("id", $cabinet->id);
+            })->first();
 
             // Create the appointment
             $appointment = Appointment::create([
                 'patient_id' => $patient_id,
                 'cabinet_id' => $request->cabinet_id,
-                'appointment_date' => \Carbon\Carbon::parse($request->appointment_date),
+                'appointment_date' => $request->appointment_date,
                 'reason' => $request->reason,
             ]);
 
-            return response()->json(['appointment' => $appointment], 201);
+            return response()->json(['data' => [
+                'appointment_id' => $appointment->id,
+                'actorId' => $appointment->patient_id,
+                'recipientId' => $manager->id,
+                'appointment_date' => $appointment->appointment_date,
+                'patient_name' => $request->user->username,
+            ]], 201);
+            
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
