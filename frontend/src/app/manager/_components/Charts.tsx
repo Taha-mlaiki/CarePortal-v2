@@ -12,22 +12,29 @@ import {
   YAxis,
 } from "recharts";
 
-const Charts = () => {
-  // Dummy data for charts
-  const appointmentData = [
-    { date: "Mon", appointments: 12 },
-    { date: "Tue", appointments: 19 },
-    { date: "Wed", appointments: 15 },
-    { date: "Thu", appointments: 22 },
-    { date: "Fri", appointments: 18 },
-    { date: "Sat", appointments: 10 },
-    { date: "Sun", appointments: 8 },
-  ];
+const Charts = ({ statistiques }: { statistiques: any }) => {
 
   const statusData = [
-    { name: "Confirmed", value: 65, color: "#22c55e" },
-    { name: "Pending", value: 25, color: "#eab308" },
-    { name: "Canceled", value: 10, color: "#ef4444" },
+    {
+      name: "Scheduled",
+      value: statistiques.scheduled_appointments,
+      color: "#22c55e",
+    },
+    {
+      name: "Pending",
+      value: statistiques.pending_appointments,
+      color: "#eab308",
+    },
+    {
+      name: "Canceled",
+      value: statistiques.canceled_appointments,
+      color: "#ef4444",
+    },
+    {
+      name: "Completed",
+      value: statistiques.completed_appointments,
+      color: "#6d28d9",
+    },
   ];
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
@@ -41,7 +48,7 @@ const Charts = () => {
             <BarChart
               width={500}
               height={300}
-              data={appointmentData}
+              data={statistiques.appointment_weeks}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <XAxis dataKey="date" />
