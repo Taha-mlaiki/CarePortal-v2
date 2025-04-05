@@ -3,22 +3,30 @@ import { jwtDecode } from "jwt-decode";
 interface jwtPayload {
   exp: number;
   role: {
-    name: "patient" | "manager"
+    name: "patient" | "manager";
   };
 }
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value as string | null;
 
+  if (!token) {
+    return NextResponse.redirect(new URL("/auth", request.url));
+  }
+  const decoded = jwtDecode<jwtPayload>(token as string);
+  const role = decoded.role.name;
   if (token && pathname == "/auth") {
-    const decoded = jwtDecode<jwtPayload>(token as string);
-    const role = decoded.role.name;
-    console.log(role);
     if (role == "patient") {
       return NextResponse.redirect(new URL("/patient/dashboard", request.url));
     } else if (role == "manager") {
       return NextResponse.redirect(new URL("/manager/dashboard", request.url));
     }
+  }
+  if (token && pathname.startsWith("/patient") && role !== "patient") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+  if (token && pathname.startsWith("/manager") && role !== "manager") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 }
 
