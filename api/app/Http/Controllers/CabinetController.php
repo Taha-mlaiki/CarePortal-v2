@@ -7,6 +7,7 @@ use App\Models\Cabinet;
 use App\Models\Manager;
 use App\Services\FileManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CabinetController extends Controller
@@ -163,7 +164,67 @@ class CabinetController extends Controller
         return response()->json(['unavailable_dates' => $unavailableDates], 200);
     }
 
-
+    public function getStatistiques(Request $request)
+    {
+        $user = $request->user;
+        $cabinet = Cabinet::where('manager_id', $user->id)->first();
+        if (!$cabinet) {
+            return response()->json(['error' => 'Cabinet not found'], 404);
+        }
+        $totalAppointments = Appointment::where('cabinet_id', $cabinet->id)->count();
+        // get scheduled appointments 
+        $scheduledAppointments = Appointment::where('cabinet_id', $cabinet->id)
+            ->where('status', 'Scheduled')
+            ->count();
+        // get completed appointments
+        $pendingAppointments = Appointment::where('cabinet_id', $cabinet->id)
+            ->where('status', 'Pending')
+            ->count();
+        // get canceled appointments
+        $canceledAppointments = Appointment::where('cabinet_id', $cabinet->id)
+            ->where('status', 'Canceled')
+            ->count();
+        $CompletedAppointments = Appointment::where('cabinet_id', $cabinet->id)
+            ->where('status', 'Completed')
+            ->count();
+            $appointmentData = DB::select(
+                "WITH day_data AS (
+                    SELECT
+                        CASE EXTRACT(DOW FROM appointment_date)
+                            WHEN 0 THEN 'Sun'
+                            WHEN 1 THEN 'Mon'
+                            WHEN 2 THEN 'Tue'
+                            WHEN 3 THEN 'Wed'
+                            WHEN 4 THEN 'Thu'
+                            WHEN 5 THEN 'Fri'
+                            WHEN 6 THEN 'Sat'
+                        END as date
+                    FROM appointments
+                    WHERE cabinet_id = :cabinet_id
+                )
+                SELECT date, COUNT(*) as appointments
+                FROM day_data
+                GROUP BY date
+                ORDER BY CASE date
+                    WHEN 'Mon' THEN 1
+                    WHEN 'Tue' THEN 2
+                    WHEN 'Wed' THEN 3
+                    WHEN 'Thu' THEN 4
+                    WHEN 'Fri' THEN 5
+                    WHEN 'Sat' THEN 6
+                    WHEN 'Sun' THEN 7
+                END",
+                ['cabinet_id' => $cabinet->id]
+            );
+        return response()->json([
+            'total_appointments' => $totalAppointments,
+            'scheduled_appointments' => $scheduledAppointments,
+            'pending_appointments' => $pendingAppointments,
+            'canceled_appointments' => $canceledAppointments,
+            'completed_appointments' => $CompletedAppointments,
+            'appointment_weeks' => $appointmentData,
+        ], 200);
+    }
 
     public function getTodayClosed(Request $request)
     {

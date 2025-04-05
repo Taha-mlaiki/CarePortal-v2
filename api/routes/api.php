@@ -28,6 +28,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get("/manager/cabinet", [CabinetController::class, "managerCabinet"]);
         Route::post("/manager/cabinet", [CabinetController::class, "updateCabinet"]);
         Route::post("/cabinets", [CabinetController::class, "store"]);
+        Route::get("/cabinets/statistiques", [CabinetController::class, "getStatistiques"]);
         Route::get("/cabinets/today-closed", [CabinetController::class, "getTodayClosed"]);
         Route::post("/cabinets/today-closed", [CabinetController::class, "setTodayClosed"]);
         Route::get("/cabinets/appointments", [CabinetController::class, "appointments"]);
