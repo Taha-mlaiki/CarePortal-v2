@@ -1,7 +1,8 @@
-"use client"
+"use client";
 import React from "react";
 import { HelpCenter } from "./HelpCenter";
 import { UserMenu } from "@/app/_components/UserMenu";
+import { NotificationFeed } from "./NotificationFeed";
 
 const Header = ({
   title,
@@ -13,15 +14,12 @@ const Header = ({
   return (
     <div className="flex items-start justify-between mb-16 pt-14 lg:pt-0">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">
-          {title}
-        </h1>
-        <p className="text-gray-500">
-          {description}
-        </p>
+        <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
+        <p className="text-gray-500">{description}</p>
       </div>
       <div className="flex items-center gap-x-7">
         <HelpCenter />
+        <NotificationFeed />
         <UserMenu />
       </div>
     </div>

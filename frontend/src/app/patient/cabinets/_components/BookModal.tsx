@@ -35,13 +35,16 @@ import { format } from "date-fns/format";
 import axios from "@/lib/axios";
 import { toast } from "sonner";
 import { SubmitButton } from "@/components/SubmitButton";
+import { sendNotification } from "@/actions/SendNotification";
 
 const formSchema = z.object({
-  bookingDate: z.date({
-    required_error: "Please select a booking date",
-  }).refine((val) => val >= new Date(new Date().setHours(0, 0, 0, 0)), {
-    message: "Booking date must be today or in the future",
-  }),
+  bookingDate: z
+    .date({
+      required_error: "Please select a booking date",
+    })
+    .refine((val) => val >= new Date(new Date().setHours(0, 0, 0, 0)), {
+      message: "Booking date must be today or in the future",
+    }),
   reason: z
     .string()
     .max(150, { message: "Reason must be at most 150 characters" })
@@ -108,21 +111,35 @@ const BookModal = ({
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
-      const res = await axios.post("/appointments", {
+      const resFetch = await axios.post("/appointments", {
         cabinet_id: id,
-        appointment_date: data.bookingDate.toISOString(), // Safe: bookingDate is guaranteed Date
+        appointment_date: data.bookingDate.toLocaleDateString(),
         reason: data.reason,
       });
-      if (res.status === 201) {
+      if (resFetch.status === 201) {
         form.reset();
         setBookingSuccess(true);
+        const data = resFetch.data.data;
+        console.log(resFetch.data)
         setTimeout(() => {
           setOpenDialog(false);
           setBookingSuccess(false);
         }, 3000);
+        const res = await sendNotification({
+          recipientId: data.recipientId,
+          actorId: data.actorId,
+          appointment_id: data.appointment_id,
+          appointment_date: data.appointment_date,
+          patient_name: data.patient_name,
+        });
+        if (res) {
+          console.log(res);
+          toast.warning("The manager will not see you appointment");
+        }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.log(error)
       toast.error(error.response?.data?.error || "Failed to book appointment");
     }
   };
