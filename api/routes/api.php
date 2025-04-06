@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\isManager;
 use App\Http\Middleware\isPatient;
@@ -36,8 +37,9 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post("/cabinets/appointments/{id}/schedule", [AppointmentController::class, "scheduleAppointment"]);
         Route::post("/cabinets/appointments/{id}/complete", [AppointmentController::class, "completeAppointment"]);
         Route::post("/cabinets/appointments/{id}/archive", [AppointmentController::class, "archiveAppointment"]);
+        Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession']);
     });
-
+    
     Route::middleware([isPatient::class])->group(function () {
         // cabinets
         Route::get("/cabinets/{id}/dates", [CabinetController::class, "getunavailableDates"]);
@@ -66,3 +68,4 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+Route::post('/webhook', [PaymentController::class, 'handleWebhook']);

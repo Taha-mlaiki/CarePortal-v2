@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->boolean("is_archived")->default(false);
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->string("stripe_session_id")->unique();
+            $table->integer("manager_id");
+            $table->decimal("price");
+            $table->string("period");
+            $table->timestamps();
         });
     }
 
@@ -21,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('payments');
     }
 };
