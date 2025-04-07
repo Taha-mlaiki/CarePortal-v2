@@ -87,7 +87,7 @@ const AppointmentStatusPage = () => {
             Pending
           </Badge>
         );
-      case "Confirmed":
+      case "Scheduled":
         return (
           <Badge
             variant="outline"
@@ -95,6 +95,16 @@ const AppointmentStatusPage = () => {
           >
             <Check className="w-3 h-3" />
             Scheduled
+          </Badge>
+        );
+      case "Completed":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-violet-100 gap-x-1 text-violet-800"
+          >
+            <Check className="w-3 h-3" />
+            Completed
           </Badge>
         );
       case "Canceled":

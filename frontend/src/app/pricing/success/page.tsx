@@ -27,10 +27,10 @@ export default function Success() {
 
         {/* Button */}
         <Link
-          href="/manager/dashboard" // Adjust this URL to your app's dashboard or home
+          href="/create-cabinet" 
           className="inline-block bg-green-600 text-white font-semibold py-3 px-6 rounded-full hover:bg-green-700 transition duration-300"
         >
-          Go to Dashboard
+          Create cabinet
         </Link>
 
         {/* Decorative Dots */}

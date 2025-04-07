@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +16,8 @@ import { toast } from "sonner";
 
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "@/lib/axios";
+import { useUserState } from "@/store/userStore";
+import { redirect } from "next/navigation";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
@@ -58,6 +60,17 @@ const pricingPlans = [
 
 export default function PricingPage() {
   const [loading, setLoading] = useState(false);
+
+  const { user, fetchUser } = useUserState();
+
+  useEffect(() => {
+    fetchUser();
+    if (user) {
+      if (user?.is_payed) {
+        redirect("/create-cabinet");
+      }
+    }
+  }, [fetchUser]);
 
   const handleCheckout = async (planId: number) => {
     setLoading(true);

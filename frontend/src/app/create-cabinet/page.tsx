@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -12,7 +12,8 @@ import ImagesForm from "./_components/ImagesForm";
 import PersonalInfoForm from "./_components/PersonalInfoForm";
 import axios from "@/lib/axios";
 import { SubmitButton } from "@/components/SubmitButton";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { useUserState } from "@/store/userStore";
 
 const cabinetSchema = z.object({
   name: z
@@ -60,6 +61,18 @@ export type ImageFile = { file: File; preview: string; id: string };
 export default function CabinetPage() {
   const [cabinetImages, setCabinetImages] = useState<ImageFile[]>([]);
   const [thumbnailImage, setThumbnailImage] = useState<ImageFile | null>(null);
+
+  
+    const { user, fetchUser } = useUserState();
+  
+    useEffect(() => {
+      fetchUser();
+      if (user) {
+        if (user?.hasCabinet) {
+          redirect("/manager/dashboard");
+        }
+      }
+    }, [fetchUser]);
 
   const form = useForm<CabinetFormValues>({
     resolver: zodResolver(cabinetSchema),

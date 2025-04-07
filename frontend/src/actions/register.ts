@@ -28,6 +28,7 @@ export const registerAction = async ({
   });
   const cookieStore = await cookies();
   if (res.data.token) {
+
     cookieStore.set({
       name: "token",
       value: res.data.token,
@@ -35,6 +36,7 @@ export const registerAction = async ({
       path: "/",
       maxAge: 60 * 60 * 24,
     });
+    
     return {
       success: res.data.success,
       role: res.data.role,

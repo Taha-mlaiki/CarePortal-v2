@@ -30,8 +30,12 @@ const MedicalDashboard = () => {
   });
   useEffect(() => {
     const fetchStatistiques = async () => {
-      const res = await axios.get("/cabinets/statistiques");
-      setStatistiques(res.data);
+      try {
+        const res = await axios.get("/cabinets/statistiques");
+        setStatistiques(res.data);
+      } catch (error) {
+        console.log(error)
+      }
     };
     fetchStatistiques();
   }, []);

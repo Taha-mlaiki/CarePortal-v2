@@ -60,10 +60,12 @@ const AppointmentDetails = ({
                 <Badge
                   variant="outline"
                   className={`${
-                    appointment.status === "Confirmed"
+                    appointment.status === "Scheduled"
                       ? "bg-green-100 text-green-800"
                       : appointment.status === "Pending"
                       ? "bg-yellow-100 text-yellow-800"
+                      : appointment.status === "Completed"
+                      ? "bg-violet-100 text-violet-700"
                       : "bg-red-100 text-red-800"
                   }`}
                 >

@@ -65,7 +65,7 @@ export function RegisterForm() {
     },
   });
 
-  const { isSubmitting:isLoading } = form.formState;
+  const { isSubmitting: isLoading } = form.formState;
 
   const selectedRole = form.watch("role");
 
@@ -77,7 +77,7 @@ export function RegisterForm() {
         if (res?.role === "patient") {
           router.push("/patient/dashboard");
         } else if (res?.role === "manager") {
-          router.push("/auth/create-cabinet");
+          router.push("/pricing");
         }
       }
     } catch (error) {

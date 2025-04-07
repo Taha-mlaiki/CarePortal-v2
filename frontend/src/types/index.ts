@@ -5,6 +5,8 @@ export type UserType = {
   username: string;
   image: string | undefined;
   email: string;
+  hasCabinet?:boolean;
+  is_payed?:boolean;
   role: "patient" | "manager";
   phone: string;
 };

@@ -2,7 +2,7 @@
 
 import { useUserState } from "@/store/userStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { HeartIcon, LayoutDashboard, LogOut, Store } from "lucide-react";
+import { CalendarHeartIcon, HeartIcon, LayoutDashboard, LogOut, Store } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
@@ -86,18 +86,18 @@ export const UserMenu = () => {
             Dashboard
           </DropdownMenuItem>
         </Link>
-        <Separator className="my-0.5" />
-        <Link
-          href={`${basePath}/cabinets/favorites`}
-          className="flex items-center gap-x-2"
-        >
-          <DropdownMenuItem className="w-full">
-            <HeartIcon className="w-4 h-4" />
-            Favorites
-          </DropdownMenuItem>
-        </Link>
-        {user.role == "manager" && (
+        {user.role === "patient" && (
           <>
+            <Separator className="my-0.5" />
+            <Link
+              href={`${basePath}/cabinets/favorites`}
+              className="flex items-center gap-x-2"
+            >
+              <DropdownMenuItem className="w-full">
+                <HeartIcon className="w-4 h-4" />
+                Favorites
+              </DropdownMenuItem>
+            </Link>
             <Separator className="my-0.5" />
             <Link
               href={`${basePath}/cabinets`}
@@ -106,6 +106,20 @@ export const UserMenu = () => {
               <DropdownMenuItem className="w-full">
                 <Store className="w-4 h-4" />
                 Cabinets
+              </DropdownMenuItem>
+            </Link>
+          </>
+        )}
+        {user.role === "manager" && (
+          <>
+            <Separator className="my-0.5" />
+            <Link
+              href={`manager/appointments`}
+              className="flex items-center gap-x-2"
+            >
+              <DropdownMenuItem className="w-full">
+                <CalendarHeartIcon className="w-4 h-4" />
+                Appointments
               </DropdownMenuItem>
             </Link>
           </>
