@@ -90,6 +90,11 @@ class CabinetController extends Controller
                 return response()->json(['error' => 'Manager record not found'], 500);
             }
 
+            $payment = $manager->payment()->exists();
+            if(!$payment){
+                return response()->json(['error' => 'You need to pay us first'], 403);
+            }
+
             // Validation rules
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',

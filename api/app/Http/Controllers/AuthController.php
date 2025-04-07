@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabinet;
 use App\Models\Manager;
 use App\Models\Patient;
+use App\Models\Payment;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\FileManager;
@@ -106,9 +108,17 @@ class AuthController extends Controller
             if ($manager) {
                 // Assuming a relationship between Manager and Cabinet
                 $cabinet = $manager->cabinet; // Define this relationship in the Manager model
+                $payment = Payment::where('manager_id', $user->id)->get();
+                if ($payment->isEmpty()) {
+                    $responseData['redirect'] = '/pricing';
+                    $responseData['warning'] = 'You need to pay us first';
+                    return response()->json($responseData, 200);
+                }
                 if (!$cabinet) {
-                    $responseData['redirect'] = '/auth/create-cabinet';
+                    $responseData['redirect'] = '/create-cabinet';
                     $responseData['warning'] = 'Manager has no cabinet, please create one';
+                } else {
+                    $responseData['redirect'] = '/manager/dashboard';
                 }
             } else {
                 return response()->json(['error' => 'Manager record not found'], 500);
@@ -122,6 +132,13 @@ class AuthController extends Controller
 
     public function user(Request $req)
     {
+        $user = $req->user;
+        $cabinet = Cabinet::where('manager_id', $user->id)->exists();
+        $is_payed = Payment::where('manager_id', $user->id)->exists();
+        $role = Role::where('id', $user->role_id)->first();
+        $user->hasCabinet = $cabinet;
+        $user->is_payed = $is_payed;
+        $user->role = $role->name;
         return response()->json(['user' => $req->user]);
     }
 

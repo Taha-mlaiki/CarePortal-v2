@@ -24,6 +24,9 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
 
     Route::middleware([isManager::class])->group(function () {
+        Route::middleware(['canManage'])->group(function () {
+        
+        });
         Route::get("/manager/cabinet/dates", [CabinetController::class, "getClosing"]);
         Route::post("/manager/cabinet/dates", [CabinetController::class, "setClosing"]);
         Route::get("/manager/cabinet", [CabinetController::class, "managerCabinet"]);

@@ -16,12 +16,17 @@ class Manager extends User
         'qualifications',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     public function cabinet()
     {
         return $this->hasOne(Cabinet::class);
+    }
+    public function payment()
+    {
+        return $this->hasMany(Payment::class, 'manager_id');
     }
 }
