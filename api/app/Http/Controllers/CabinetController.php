@@ -42,6 +42,9 @@ class CabinetController extends Controller
                     ->orWhere('address', 'LIKE', "%{$request->query('search')}%");
             })
             ->paginate(10);
+        foreach ($cabinets as $cabinet) {
+            $cabinet->appointments_count = $cabinet->appointments()->count();
+        }
 
         return response()->json([
             'data' => $cabinets,
@@ -91,7 +94,7 @@ class CabinetController extends Controller
             }
 
             $payment = $manager->payment()->exists();
-            if(!$payment){
+            if (!$payment) {
                 return response()->json(['error' => 'You need to pay us first'], 403);
             }
 
@@ -103,7 +106,7 @@ class CabinetController extends Controller
                 'address' => 'required|string|max:255',
                 'city' => 'required|string|max:255',
                 'location_link' => 'required|string|url|max:255',
-                'thumbnail' => 'required|image|mimes:jpeg,png,jpg|max:1024',
+                'thumbnail' => 'required|image|mimes:jpeg,png,jpg',
                 'images' => 'required|array|min:1',
                 'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
                 'email' => 'required|email|max:255',
@@ -192,8 +195,8 @@ class CabinetController extends Controller
         $CompletedAppointments = Appointment::where('cabinet_id', $cabinet->id)
             ->where('status', 'Completed')
             ->count();
-            $appointmentData = DB::select(
-                "WITH day_data AS (
+        $appointmentData = DB::select(
+            "WITH day_data AS (
                     SELECT
                         CASE EXTRACT(DOW FROM appointment_date)
                             WHEN 0 THEN 'Sun'
@@ -219,8 +222,8 @@ class CabinetController extends Controller
                     WHEN 'Sat' THEN 6
                     WHEN 'Sun' THEN 7
                 END",
-                ['cabinet_id' => $cabinet->id]
-            );
+            ['cabinet_id' => $cabinet->id]
+        );
         return response()->json([
             'total_appointments' => $totalAppointments,
             'scheduled_appointments' => $scheduledAppointments,

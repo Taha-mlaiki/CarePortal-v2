@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AppointmentCanceled;
+use App\Mail\AppointmentReminder;
+use App\Mail\AppointmentScheduled;
 use App\Models\Appointment;
 use App\Models\Cabinet;
 use App\Models\Manager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Knock\KnockSdk\Client;
 
@@ -50,6 +54,17 @@ class AppointmentController extends Controller
         ]);
     }
 
+    public function details(Request $request, $id)
+    {
+        $appointment = Appointment::with('patient')->whereHas('cabinet', function ($query) use ($request) {
+            $query->where('manager_id', $request->user->id);
+        })->find($id);
+        if (!$appointment) {
+            return response()->json(['error' => 'Appointment not found'], 404);
+        }
+        return response()->json(['appointment' => $appointment]);
+    }
+
 
     // patient cancelation
     public function cancel(Request $request, $id)
@@ -74,6 +89,7 @@ class AppointmentController extends Controller
             return response()->json(['error' => 'Only Pending appointments can be cancelled'], 400);
         }
         $appointment->update(['status' => 'Canceled']);
+        Mail::to($appointment->patient->email)->send(new AppointmentCanceled($appointment));
 
         return response()->json(['success' => 'Appointment cancelled successfully'], 200);
     }
@@ -94,7 +110,7 @@ class AppointmentController extends Controller
             ->orderBy("ticket", "desc")
             ->first();
         $appointment->update(['status' => 'Scheduled', 'ticket' => $lastTicket ? $lastTicket->ticket + 1 : 1]);
-
+        Mail::to($appointment->patient->email)->send(new AppointmentScheduled($appointment));
         return response()->json(['success' => 'Appointment Scheduled successfully'], 200);
     }
     //manager completion
@@ -108,7 +124,15 @@ class AppointmentController extends Controller
             return response()->json(['error' => 'Only Scheduled appointments can be Completed'], 400);
         }
         $appointment->update(['status' => 'Completed']);
-
+        // Send email to patient
+        $newPatientTicket = $appointment->ticket + 3;
+        $newApp = Appointment::where("ticket", $newPatientTicket)
+            ->where("cabinet_id", $appointment->cabinet_id)
+            ->where("status", "Scheduled")
+            ->first();
+            if($newApp){
+                Mail::to($newApp->patient->email)->send(new AppointmentReminder($appointment));             
+            }
         return response()->json(['success' => 'Appointment Completed successfully'], 200);
     }
     // manager archiving
@@ -168,7 +192,6 @@ class AppointmentController extends Controller
                 'appointment_date' => $appointment->appointment_date,
                 'patient_name' => $request->user->username,
             ]], 201);
-            
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }

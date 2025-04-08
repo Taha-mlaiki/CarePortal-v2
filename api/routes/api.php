@@ -36,6 +36,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get("/cabinets/today-closed", [CabinetController::class, "getTodayClosed"]);
         Route::post("/cabinets/today-closed", [CabinetController::class, "setTodayClosed"]);
         Route::get("/cabinets/appointments", [CabinetController::class, "appointments"]);
+        Route::get("/cabinets/appointments/{id}", [AppointmentController::class, "details"]);
         Route::post("/cabinets/appointments/{id}/cancel", [AppointmentController::class, "cancelAppointment"]);
         Route::post("/cabinets/appointments/{id}/schedule", [AppointmentController::class, "scheduleAppointment"]);
         Route::post("/cabinets/appointments/{id}/complete", [AppointmentController::class, "completeAppointment"]);
