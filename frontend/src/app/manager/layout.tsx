@@ -9,15 +9,15 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchUser();
-    if (user) {
-      if (!user?.hasCabinet) {
-        redirect("/create-cabinet");
-      }
-      if (!user?.hasCabinet) {
-        redirect("/pricing");
-      }
-    }
   }, [fetchUser]);
+  if (user) {
+    if (!user?.hasCabinet) {
+      redirect("/create-cabinet");
+    }
+    if (!user?.hasCabinet) {
+      redirect("/pricing");
+    }
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />

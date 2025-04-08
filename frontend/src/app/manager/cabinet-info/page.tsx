@@ -297,23 +297,10 @@ export default function CabinetSettings() {
           <CardContent className="p-6">
             {!isEditing ? (
               <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
-                    {thumbnailImage ? (
-                      <Image
-                        width={64}
-                        height={64}
-                        src={thumbnailImage.preview}
-                        alt="Thumbnail"
-                        className="w-16 h-16 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center text-2xl font-bold text-blue-800">
-                        {data?.name[0] || "C"}
-                      </div>
-                    )}
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
+                      <h2 className="text-4xl font-semibold text-gray-800">
                         {data?.doctor_name || "N/A"}
                       </h2>
                       <p className="text-gray-600">
@@ -577,7 +564,7 @@ export default function CabinetSettings() {
                                     height={96}
                                     src={thumbnailImage.preview}
                                     alt="Thumbnail"
-                                    className="aspect-video h-24 rounded-lg object-cover"
+                                    className="w-full h-32 object-cover rounded-lg"
                                   />
                                   <Button
                                     variant="destructive"
@@ -618,7 +605,7 @@ export default function CabinetSettings() {
                                     height={96}
                                     src={img.preview}
                                     alt="Cabinet"
-                                    className="w-full h-24 object-cover rounded-lg shadow-sm"
+                                    className="w-full h-32 object-cover rounded-lg shadow-sm"
                                   />
                                   <Button
                                     variant="destructive"

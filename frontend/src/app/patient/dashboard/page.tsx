@@ -41,6 +41,7 @@ export type AppointmentType = {
     name: string;
     address: string;
   };
+  ticket: number;
 };
 
 const fetchAppointments = async ({

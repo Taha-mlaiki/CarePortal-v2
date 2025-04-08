@@ -155,57 +155,65 @@ export const DataTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {isLoading
-            ? Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Skeleton className="h-6 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-6 w-32" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-6 w-32" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-6 w-20" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-6 w-16" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-6 w-16" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-6 w-16" />
-                  </TableCell>
-                </TableRow>
-              ))
-            : data.map((appointment) => (
-                <TableRow key={appointment.id}>
-                  <TableCell className="font-medium">
-                    {appointment.patient.username}
-                  </TableCell>
-                  <TableCell>{appointment.patient.phone}</TableCell>
-                  <TableCell>
-                    {format(
-                      new Date(appointment.appointment_date),
-                      " MMM d, yyyy"
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {format(
-                      new Date(appointment.created_at),
-                      " MMM d, yyyy | h:mm a"
-                    )}
-                  </TableCell>
-                  <TableCell>{status(appointment)}</TableCell>
-                  <TableCell>{appointment.ticket || "No ticket"}</TableCell>
-                  <TableCell>
-                    <AppointmentActions appointment={appointment} />
-                  </TableCell>
-                </TableRow>
-              ))}
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton className="h-6 w-24" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-6 w-32" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-6 w-32" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="h-6 w-20" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="h-6 w-16" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="h-6 w-16" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="h-6 w-16" />
+                </TableCell>
+              </TableRow>
+            ))
+          ) : data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center">
+                No appointment booked yet
+              </TableCell>
+            </TableRow>
+          ) : (
+            data.map((appointment) => (
+              <TableRow key={appointment.id}>
+                <TableCell className="font-medium">
+                  {appointment.patient.username}
+                </TableCell>
+                <TableCell>{appointment.patient.phone}</TableCell>
+                <TableCell>
+                  {format(
+                    new Date(appointment.appointment_date),
+                    " MMM d, yyyy"
+                  )}
+                </TableCell>
+                <TableCell>
+                  {format(
+                    new Date(appointment.created_at),
+                    " MMM d, yyyy | h:mm a"
+                  )}
+                </TableCell>
+                <TableCell>{status(appointment)}</TableCell>
+                <TableCell>{appointment.ticket || "No ticket"}</TableCell>
+                <TableCell>
+                  <AppointmentActions appointment={appointment} />
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

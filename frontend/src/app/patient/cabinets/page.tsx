@@ -22,6 +22,7 @@ export interface CabinetType {
   total_appointments: number;
   description: string;
   created_at: string;
+  appointments_count: number;
 }
 
 interface CabinetResponse {

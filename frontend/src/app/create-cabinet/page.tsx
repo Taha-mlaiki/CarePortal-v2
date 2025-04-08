@@ -67,12 +67,15 @@ export default function CabinetPage() {
   
     useEffect(() => {
       fetchUser();
-      if (user) {
-        if (user?.hasCabinet) {
-          redirect("/manager/dashboard");
-        }
-      }
     }, [fetchUser]);
+    if (user) {
+      if(!user?.is_payed){
+        redirect("/pricing");
+      }
+      if (user?.hasCabinet) {
+        redirect("/manager/dashboard");
+      }
+    }
 
   const form = useForm<CabinetFormValues>({
     resolver: zodResolver(cabinetSchema),

@@ -57,8 +57,9 @@ export const CabinetCard = ({ cabinet }: { cabinet: CabinetType }) => {
                 <span>Appointments</span>
               </div>
               <p className="mt-1  ">
-                {/* {cabinet.total_appointments.toLocaleString()} */}
-                200
+                {cabinet.appointments_count == 0
+                  ? "No appointment yet"
+                  : cabinet.appointments_count}
               </p>
             </div>
           </div>

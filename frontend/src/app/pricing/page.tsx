@@ -65,12 +65,15 @@ export default function PricingPage() {
 
   useEffect(() => {
     fetchUser();
-    if (user) {
-      if (user?.is_payed) {
-        redirect("/create-cabinet");
-      }
-    }
   }, [fetchUser]);
+  if (user) {
+    if (user?.is_payed) {
+      redirect("/create-cabinet");
+    }
+    if(user.hasCabinet){
+      redirect("/manager/dashboard");
+    }
+  }
 
   const handleCheckout = async (planId: number) => {
     setLoading(true);

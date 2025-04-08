@@ -21,7 +21,7 @@ export default function Success() {
 
         {/* Message */}
         <p className="text-gray-600 mb-6">
-          Thank you for your payment. You now have access to your cabinet. Enjoy
+          Thank you for your payment. You now have the ability to create  your cabinet. Enjoy
           your subscription!
         </p>
 

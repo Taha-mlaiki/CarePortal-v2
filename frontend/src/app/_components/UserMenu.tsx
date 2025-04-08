@@ -114,7 +114,7 @@ export const UserMenu = () => {
           <>
             <Separator className="my-0.5" />
             <Link
-              href={`manager/appointments`}
+              href={`/manager/appointments`}
               className="flex items-center gap-x-2"
             >
               <DropdownMenuItem className="w-full">
