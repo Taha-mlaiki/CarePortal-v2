@@ -25,4 +25,7 @@ class Patient extends User
     public function comments(){
         return $this->hasMany(Comment::class, 'patient_id');
     }
+    public function certaficates(){
+        return $this->hasMany(Certaficate::class, 'patient_id');
+    }
 }

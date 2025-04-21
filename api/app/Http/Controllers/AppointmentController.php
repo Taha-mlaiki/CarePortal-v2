@@ -152,6 +152,20 @@ class AppointmentController extends Controller
 
         return response()->json(['success' => 'Appointment Archived successfully', $appointment], 200);
     }
+    public function patientAppointments(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        if(!$patient_id){
+            return response()->json(['error' => 'You are not authorized to view this appointment'], 403);
+        }
+
+        $appointments = Appointment::where('patient_id', $patient_id)
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['appointments' => $appointments],200);
+    }
 
     public function store(Request $request)
     {

@@ -23,4 +23,7 @@ class Appointment extends Model
     {
         return $this->belongsTo(Patient::class, "patient_id");
     }
+    public function certificate(){
+        return $this->hasOne(Certificate::class, "appointment_id");
+    }
 }

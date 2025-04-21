@@ -40,4 +40,8 @@ class Cabinet extends Model
     {
         return $this->hasMany(Favorite::class);
     }
+    public function certaficates()
+    {
+        return $this->hasMany(Certaficate::class, 'cabinet_id');
+    }
 }

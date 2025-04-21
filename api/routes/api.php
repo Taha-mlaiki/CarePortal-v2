@@ -24,13 +24,15 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
 
 
     Route::middleware([isManager::class])->group(function () {
-        Route::middleware(['canManage'])->group(function () {
-        
-        });
         Route::get("/manager/cabinet/dates", [CabinetController::class, "getClosing"]);
         Route::post("/manager/cabinet/dates", [CabinetController::class, "setClosing"]);
         Route::get("/manager/cabinet", [CabinetController::class, "managerCabinet"]);
         Route::post("/manager/cabinet", [CabinetController::class, "updateCabinet"]);
+        Route::get("/manager/cabinet/patients", [CabinetController::class, "allCabinetPatients"]);
+        Route::post("/manager/cabinet/patients/appointments", [AppointmentController::class, "patientAppointments"]);
+        Route::post("/manager/cabinet/certificates", [CabinetController::class, "createCertaficate"]);
+        Route::get("/manager/cabinet/certaficates", [CabinetController::class, "getCertaficates"]);
+        Route::post("/manager/cabinet/certaficates/send", [CabinetController::class, "sendCertaficate"]);
         Route::post("/cabinets", [CabinetController::class, "store"]);
         Route::get("/cabinets/statistiques", [CabinetController::class, "getStatistiques"]);
         Route::get("/cabinets/today-closed", [CabinetController::class, "getTodayClosed"]);
@@ -72,4 +74,4 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
-Route::post('/webhook', [PaymentController::class, 'handleWebhook']);
+Route::post('/stripe/webhook', [PaymentController::class, 'handleWebhook']);
