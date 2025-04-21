@@ -1,224 +1,414 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import {
   Search,
-  Calendar,
   Bell,
-  Clock,
-  Hospital,
-  ChevronDown,
-  ChevronRight,
   Facebook,
   Twitter,
   Linkedin,
+  Star,
+  CalendarCheck,
+  Shield,
+  BarChart3,
+  ArrowRight,
 } from "lucide-react";
 import { Hero } from "./_components/Hero";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import Image from "next/image";
 
 const LandingPage = () => {
-  const [openFaq, setOpenFaq] = useState<null | number>(null);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Patient",
-      text: "CarePortal made it incredibly easy to find and book an appointment with a specialist. The interface is intuitive, and I received instant confirmation!",
-    },
-    {
-      name: "Dr. Michael Chen",
-      role: "Family Physician",
-      text: "As a healthcare provider, CarePortal has streamlined our booking process significantly. Our patients love the convenience it offers.",
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Patient",
-      text: "The real-time availability feature saved me so much time. No more calling multiple clinics to find an available slot!",
-    },
-  ];
-
-  const faqs = [
-    {
-      question: "How do I book an appointment?",
-      answer:
-        "Simply search for a clinic or doctor, select your preferred time slot, and confirm your booking. You'll receive an instant confirmation via email.",
-    },
-    {
-      question: "Can I cancel or reschedule my appointment?",
-      answer:
-        "Yes, you can modify or cancel your appointment up to 24 hours before the scheduled time through your CarePortal account.",
-    },
-    {
-      question: "Are my medical details secure?",
-      answer:
-        "Absolutely. We follow strict HIPAA guidelines and use industry-standard encryption to protect your personal and medical information.",
-    },
-  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
+    <div className="flex min-h-screen flex-col">
       <Hero />
-
-      {/* How It Works Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            How It Works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Search className="w-8 h-8" />,
-                title: "Search a Clinic",
-                description: "Find trusted healthcare providers in your area",
-              },
-              {
-                icon: <Calendar className="w-8 h-8" />,
-                title: "Choose a Doctor",
-                description: "Select your preferred doctor and time slot",
-              },
-              {
-                icon: <Bell className="w-8 h-8" />,
-                title: "Book & Get Notified",
-                description: "Receive instant confirmation and reminders",
-              },
-            ].map((step, index) => (
-              <div
-                key={index}
-                className="text-center p-6 bg-gray-50 rounded-xl"
-              >
-                <div className="inline-block p-4 bg-blue-100 rounded-full text-blue-600 mb-4">
-                  {step.icon}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-muted">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+              <div className="flex flex-col justify-center space-y-4">
+                <span className="inline-flex items-center rounded-lg bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
+                  <ArrowRight className="h-4 w-4 mr-1" />
+                  Simplifying Medical Appointments
+                </span>
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
+                  Medical Appointments Made Simple
+                </h1>
+                <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                  CarePortal connects patients with medical offices,
+                  streamlining the appointment booking process for everyone.
+                </p>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Button variant="brand" size="lg" asChild>
+                    <Link href="/register">Sign Up Now</Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="#features">Learn More</Link>
+                  </Button>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Key Features Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Key Features
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2  gap-8">
-            {[
-              {
-                icon: <Calendar className="w-6 h-6" />,
-                title: "Instant Booking",
-                description: "Schedule appointments with just a few clicks",
-              },
-              {
-                icon: <Clock className="w-6 h-6" />,
-                title: "Real-time Availability",
-                description: "See available time slots instantly",
-              },
-              {
-                icon: <Bell className="w-6 h-6" />,
-                title: "Email And in-app Notifications",
-                description: "Get timely updates about your appointments",
-              },
-              {
-                icon: <Hospital className="w-6 h-6" />,
-                title: "Cabinet Management",
-                description: "Efficient scheduling for healthcare providers",
-              },
-            ].map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition"
-              >
-                <div className="text-blue-600 mb-4">{feature.icon}</div>
-                <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            What Our Users Say
-          </h2>
-          <div className="relative">
-            <div className="flex overflow-hidden">
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={index}
-                  className={`w-full flex-shrink-0 transition-transform duration-500 transform ${
-                    index === currentTestimonial
-                      ? "translate-x-0"
-                      : "translate-x-full"
-                  }`}
-                >
-                  <div className="bg-gray-50 p-8 rounded-xl max-w-2xl mx-auto">
-                    <p className="text-gray-600 italic mb-4">
-                      {testimonial.text}
-                    </p>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-gray-500 text-sm">
-                      {testimonial.role}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-center mt-8 space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full ${
-                    index === currentTestimonial ? "bg-blue-600" : "bg-gray-300"
-                  }`}
-                  onClick={() => setCurrentTestimonial(index)}
+              <div className="flex justify-center">
+                <Image
+                  src="/call-patient-doctor.jpg"
+                  alt="CarePortal Dashboard Preview"
+                  width={500}
+                  height={500}
+                  className="rounded-lg object-cover"
                 />
-              ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FAQs Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm">
-                <button
-                  className="w-full px-6 py-4 flex justify-between items-center"
-                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                >
-                  <span className="font-semibold text-left">
-                    {faq.question}
-                  </span>
-                  {openFaq === index ? (
-                    <ChevronDown className="w-5 h-5" />
-                  ) : (
-                    <ChevronRight className="w-5 h-5" />
-                  )}
-                </button>
-                {openFaq === index && (
-                  <div className="px-6 pb-4">
-                    <p className="text-gray-600">{faq.answer}</p>
-                  </div>
-                )}
+        {/* Features Section */}
+        <section id="features" className="w-full py-12 md:py-24 bg-background">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-brand/10 px-3 py-1 text-sm text-brand">
+                  Key Features
+                </div>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                  Why Choose CarePortal?
+                </h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Our platform offers a comprehensive solution for both patients
+                  and medical office managers.
+                </p>
               </div>
-            ))}
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+                <div className="rounded-full bg-brand/10 p-3">
+                  <Search className="h-6 w-6 text-brand" />
+                </div>
+                <h3 className="text-xl font-bold">Easy Search</h3>
+                <p className="text-center text-muted-foreground">
+                  Find nearby medical offices by name or address with our
+                  intuitive search.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+                <div className="rounded-full bg-brand/10 p-3">
+                  <CalendarCheck className="h-6 w-6 text-brand" />
+                </div>
+                <h3 className="text-xl font-bold">Simple Booking</h3>
+                <p className="text-center text-muted-foreground">
+                  Book appointments based on real-time availability with just a
+                  few clicks.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+                <div className="rounded-full bg-brand/10 p-3">
+                  <Bell className="h-6 w-6 text-brand" />
+                </div>
+                <h3 className="text-xl font-bold">Smart Notifications</h3>
+                <p className="text-center text-muted-foreground">
+                  Receive timely updates about your appointments via email.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+                <div className="rounded-full bg-brand/10 p-3">
+                  <Star className="h-6 w-6 text-brand" />
+                </div>
+                <h3 className="text-xl font-bold">Favorites & Reviews</h3>
+                <p className="text-center text-muted-foreground">
+                  Save your favorite medical offices and share your experience
+                  after consultations.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+                <div className="rounded-full bg-brand/10 p-3">
+                  <BarChart3 className="h-6 w-6 text-brand" />
+                </div>
+                <h3 className="text-xl font-bold">Powerful Dashboard</h3>
+                <p className="text-center text-muted-foreground">
+                  Manage appointments and view statistics with our comprehensive
+                  dashboard.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-6 shadow-sm">
+                <div className="rounded-full bg-brand/10 p-3">
+                  <Shield className="h-6 w-6 text-brand" />
+                </div>
+                <h3 className="text-xl font-bold">Secure & Private</h3>
+                <p className="text-center text-muted-foreground">
+                  Your data is protected with industry-standard security and
+                  GDPR compliance.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
+        {/* For Patients Section */}
+        <section id="patients" className="w-full py-12 md:py-24 bg-muted">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+              <div className="flex justify-center">
+                <Image
+                  src="/patient-image.jpg"
+                  alt="Patient using CarePortal"
+                  width={500}
+                  height={400}
+                  className="rounded-lg object-cover"
+                />
+              </div>
+              <div className="flex flex-col justify-center space-y-4">
+                <span className="inline-flex items-center rounded-lg bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
+                  <ArrowRight className="h-4 w-4 mr-1" />
+                  For Patients
+                </span>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+                  Find Care When You Need It
+                </h2>
+                <p className="text-muted-foreground md:text-xl">
+                  CarePortal makes it easy to find and book appointments with
+                  medical professionals in your area.
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Search for nearby medical offices</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>
+                      Book appointments based on real-time availability
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Manage and track your appointments</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Save favorite medical offices</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Share your experience with reviews</span>
+                  </li>
+                </ul>
+                <Button variant="brand" asChild>
+                  <Link href="/auth">Register as a Patient</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      {/* Footer */}
+        {/* For Managers Section */}
+        <section id="managers" className="w-full py-12 md:py-24 bg-background">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+              <div className="flex flex-col justify-center space-y-4 order-2 lg:order-1">
+                <span className="inline-flex items-center rounded-lg bg-brand/10 px-3 py-1 text-sm font-semibold text-brand">
+                  <ArrowRight className="h-4 w-4 mr-1" />
+                  For Medical Office Managers
+                </span>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+                  Streamline Your Practice
+                </h2>
+                <p className="text-muted-foreground md:text-xl">
+                  CarePortal gives you the tools to efficiently manage your
+                  medical office and appointments.
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Create and manage your medical office profile</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>View comprehensive appointment statistics</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Filter and manage appointments efficiently</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Receive notifications for new appointments</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <div className="rounded-full bg-brand/10 p-1">
+                      <CalendarCheck className="h-4 w-4 text-brand" />
+                    </div>
+                    <span>Set availability and manage closed days</span>
+                  </li>
+                </ul>
+                <Button variant="brand" asChild>
+                  <Link href="/auth">Register as a Manager</Link>
+                </Button>
+              </div>
+              <div className="flex justify-center order-1 lg:order-2">
+                <Image
+                  src="/manager-image.jpg"
+                  alt="Medical office manager using CarePortal"
+                  width={500}
+                  height={400}
+                  className="rounded-lg object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section id="testimonials" className="w-full py-12 md:py-24 bg-muted">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+                  What Our Users Say
+                </h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Hear from patients and medical office managers who use
+                  CarePortal.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-12">
+              <div className="flex flex-col justify-between space-y-4 rounded-lg border p-6 shadow-sm">
+                <div className="space-y-2">
+                  <div className="flex space-x-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-5 w-5 fill-yellow-500 text-yellow-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground">
+                    &quot;CarePortal has made finding and booking medical
+                    appointments so much easier. I love being able to see
+                    availability in real-time!&quot;
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-full w-10 flex items-center justify-center h-10 bg-muted-foreground/10 p-1">
+                    <span className="text-xl font-bold">S</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Sarah L.</p>
+                    <p className="text-xs text-muted-foreground">Patient</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col justify-between space-y-4 rounded-lg border p-6 shadow-sm">
+                <div className="space-y-2">
+                  <div className="flex space-x-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-5 w-5 fill-yellow-500 text-yellow-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground">
+                    &quot;As a medical office manager, CarePortal has
+                    streamlined our appointment process and reduced no-shows
+                    with its notification system.&quot;
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-full bg-muted-foreground/10 p-1">
+                    <span className="text-xl w-10 flex items-center justify-center h-10 font-bold">
+                      D
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Dr. Michael T.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Office Manager
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col justify-between space-y-4 rounded-lg border p-6 shadow-sm">
+                <div className="space-y-2">
+                  <div className="flex space-x-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-5 w-5 fill-yellow-500 text-yellow-500"
+                      />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground">
+                    &quot;The dashboard analytics have helped us optimize our
+                    scheduling and improve patient satisfaction. Great
+                    platform!&quot;
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="rounded-full bg-muted-foreground/10 p-1">
+                    <span className="text-xl w-10 flex items-center justify-center h-10 font-bold">
+                      J
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Jessica R.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Clinic Administrator
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="w-full  py-12 md:py-24 lg:py-32 bg-brand text-brand-foreground">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold text-white tracking-tighter sm:text-4xl md:text-5xl">
+                  Ready to Simplify Medical Appointments?
+                </h2>
+                <p className="max-w-[900px] text-white md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Join CarePortal today and experience a better way to manage
+                  medical appointments.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                <Button size="lg" variant="secondary" asChild>
+                  <Link href="/auth">Sign Up Now</Link>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  className="bg-transparent"
+                  asChild
+                >
+                  <Link href="#features">Learn More</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
       <footer className="bg-gray-900 text-gray-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">

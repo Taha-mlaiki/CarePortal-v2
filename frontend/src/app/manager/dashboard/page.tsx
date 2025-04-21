@@ -1,12 +1,10 @@
 "use client";
 
 import {
-  TrendingUp,
   Users,
   Clock,
   CheckCircle,
   XCircle,
-  DollarSign,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";

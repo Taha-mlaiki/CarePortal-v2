@@ -17,6 +17,9 @@ export function middleware(request: NextRequest) {
   if (!token && pathname === "/auth") {
     return;
   }
+  if (!token && pathname === "/") {
+    return;
+  }
 
   if (!token) {
     return NextResponse.redirect(new URL("/auth", request.url));
@@ -32,7 +35,6 @@ export function middleware(request: NextRequest) {
   }
 
   const role = decoded.role.name;
-
   if (pathname == "/auth" && token) {
     if (role === "manager") {
       return NextResponse.redirect(new URL("/manager/dashboard", request.url));

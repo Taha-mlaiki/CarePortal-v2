@@ -59,7 +59,7 @@ export const UserMenu = () => {
       <DropdownMenuContent
         side="bottom"
         sideOffset={20}
-        className="absolute  -right-6 p-2 w-[250px]"
+        className="absolute right-0 p-2 w-[250px]"
       >
         <div className="flex items-start gap-x-2 mb-2">
           <Avatar>

@@ -24,6 +24,7 @@ import axios from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns/format";
 import AppointmentDetails from "./_components/AppointmentDetails";
+import Link from "next/link";
 
 export type AppointmentType = {
   id: number;
@@ -144,9 +145,14 @@ const AppointmentStatusPage = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
-        <p className="text-gray-500">Manage and track your appointments</p>
+      <div className="flex items-end justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
+          <p className="text-gray-500">Manage and track your appointments</p>
+        </div>
+        <Button variant="brand" asChild>
+          <Link href="/patient/cabinets/favorites">New Appointment</Link>
+        </Button>
       </div>
 
       {/* Filters */}

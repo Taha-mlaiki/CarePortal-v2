@@ -122,100 +122,102 @@ export const DataTable = ({
           <FilterPopover params={params} setParams={setParams} />
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <div className="flex items-center justify-start ">
-                <User className="mr-2 h-4 w-4" />
-                Username
-              </div>
-            </TableHead>
-            <TableHead>
-              <div className="flex items-center justify-start ">
-                <Phone className="mr-2 h-4 w-4" />
-                Phone
-              </div>
-            </TableHead>
-            <TableHead>
-              <div className="flex items-center justify-start">
-                <Calendar className="mr-2 w-4 h-4" />
-                Appointment Date
-              </div>
-            </TableHead>
-            <TableHead>
-              <div className="flex items-center justify-start">
-                <Calendar className="mr-2 w-4 h-4" />
-                Created At
-              </div>
-            </TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>ticket</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Skeleton className="h-6 w-24" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-6 w-32" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-6 w-32" />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="h-6 w-20" />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="h-6 w-16" />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="h-6 w-16" />
-                </TableCell>
-                <TableCell className="text-right">
-                  <Skeleton className="h-6 w-16" />
-                </TableCell>
-              </TableRow>
-            ))
-          ) : data.length === 0 ? (
+      <div className="bg-white p-2 rounded-md">
+        <Table className="">
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={7} className="text-center">
-                No appointment booked yet
-              </TableCell>
+              <TableHead>
+                <div className="flex items-center justify-start ">
+                  <User className="mr-2 h-4 w-4" />
+                  Username
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center justify-start ">
+                  <Phone className="mr-2 h-4 w-4" />
+                  Phone
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center justify-start">
+                  <Calendar className="mr-2 w-4 h-4" />
+                  Appointment Date
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center justify-start">
+                  <Calendar className="mr-2 w-4 h-4" />
+                  Created At
+                </div>
+              </TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>ticket</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ) : (
-            data.map((appointment) => (
-              <TableRow key={appointment.id}>
-                <TableCell className="font-medium">
-                  {appointment.patient.username}
-                </TableCell>
-                <TableCell>{appointment.patient.phone}</TableCell>
-                <TableCell>
-                  {format(
-                    new Date(appointment.appointment_date),
-                    " MMM d, yyyy"
-                  )}
-                </TableCell>
-                <TableCell>
-                  {format(
-                    new Date(appointment.created_at),
-                    " MMM d, yyyy | h:mm a"
-                  )}
-                </TableCell>
-                <TableCell>{status(appointment)}</TableCell>
-                <TableCell>{appointment.ticket || "No ticket"}</TableCell>
-                <TableCell>
-                  <AppointmentActions appointment={appointment} />
+          </TableHeader>
+          <TableBody className="divide-y">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-6 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-20" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center">
+                  No appointment booked yet
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              data.map((appointment) => (
+                <TableRow key={appointment.id}>
+                  <TableCell className="font-medium">
+                    {appointment.patient.username}
+                  </TableCell>
+                  <TableCell>{appointment.patient.phone}</TableCell>
+                  <TableCell>
+                    {format(
+                      new Date(appointment.appointment_date),
+                      " MMM d, yyyy"
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {format(
+                      new Date(appointment.created_at),
+                      " MMM d, yyyy | h:mm a"
+                    )}
+                  </TableCell>
+                  <TableCell>{status(appointment)}</TableCell>
+                  <TableCell>{appointment.ticket || "No ticket"}</TableCell>
+                  <TableCell>
+                    <AppointmentActions appointment={appointment} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

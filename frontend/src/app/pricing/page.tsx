@@ -95,12 +95,12 @@ export default function PricingPage() {
         const sessionId = res.data.sessionId;
         const stripe = await stripePromise;
         if (stripe) {
-          await stripe.redirectToCheckout({ sessionId });
+           await stripe.redirectToCheckout({ sessionId });
         }
       }
     } catch (error) {
       console.log(error);
-      //@ts-expect-error
+      //@ts-expect-error somthing here
       toast.error(error.response.data.error);
     }
 

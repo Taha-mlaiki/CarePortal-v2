@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileText, Loader, PhoneCall, Ticket, User } from "lucide-react";
+import { FileText, Loader, MailCheck, PhoneCall, Ticket, User } from "lucide-react";
 import { format } from "date-fns";
 import { Appointment } from "../../_components/data-table";
 import { ReactNode, useState } from "react";
@@ -80,7 +80,7 @@ export const PatientDetails = ({
         </DialogHeader>
         <div>
           <div className="space-y-5 mt-4 ">
-            {/* Cabinet Name */}
+            {/* patient username */}
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-blue-600" />
@@ -92,8 +92,20 @@ export const PatientDetails = ({
                 </p>
               </div>
             </div>
+            {/* patient email */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <MailCheck className="w-4 h-4 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Email</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {appointment.patient.email}
+                </p>
+              </div>
+            </div>
 
-            {/* Cabinet Location */}
+            {/* patient phone */}
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                 <PhoneCall className="w-4 h-4 text-green-600" />

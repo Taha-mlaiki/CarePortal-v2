@@ -11,6 +11,7 @@ import {
   X,
   CalendarCog,
   Info,
+  BookUp,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,6 +23,7 @@ const Sidebar = () => {
   const routes = [
     { label: "Dashboard", path: "/manager/dashboard", icon: LayoutDashboard },
     { label: "Appointments", path: "/manager/appointments", icon: Calendar },
+    { label: "Certificates", path: "/manager/certificates", icon: BookUp },
     { label: "Cabinet", path: "/manager/cabinet-info", icon: Info },
     { label: "Dates", path: "/manager/dates-info", icon: CalendarCog },
   ];

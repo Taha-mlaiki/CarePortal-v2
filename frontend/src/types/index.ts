@@ -5,8 +5,8 @@ export type UserType = {
   username: string;
   image: string | undefined;
   email: string;
-  hasCabinet?:boolean;
-  is_payed?:boolean;
+  hasCabinet?: boolean;
+  is_payed?: boolean;
   role: "patient" | "manager";
   phone: string;
 };
@@ -47,3 +47,23 @@ export const appointmentSchema = z.object({
     .min(5, "appointment reson must at least contain 5 characheter"),
   Date: z.date(),
 });
+
+export interface Certificate {
+  id: string;
+  cabinet: {
+    id: number;
+    doctor_name: string;
+  };
+  appointment: {
+    appointment_date: Date,
+    patient: {
+      id: number;
+      username: string;
+    };
+  };
+  issue_date: string;
+  expiration_date: string;
+  recieved: boolean;
+  diagnosis: string;
+  recommendations: string;
+}

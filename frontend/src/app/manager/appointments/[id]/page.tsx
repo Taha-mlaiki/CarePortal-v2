@@ -5,7 +5,7 @@ import axios from "@/lib/axios";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { FileText, PhoneCall, Ticket, User } from "lucide-react";
+import { FileText, MailCheck, PhoneCall, Ticket, User } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "lucide-react";
@@ -25,7 +25,7 @@ const Page = () => {
           const res = await axios.get(`/cabinets/appointments/${id}`);
           if (res.data.appointment) {
             setAppointment(res.data.appointment);
-          }       
+          }
         } catch (error) {
           //@ts-expect-error something went wrong
           toast.error(error.response.data.error);
@@ -172,6 +172,18 @@ const Page = () => {
                   <p className="text-sm font-medium text-gray-500">Username</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {appointment.patient.username}
+                  </p>
+                </div>
+              </div>
+              {/* patient email */}
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <MailCheck className="w-4 h-4 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {appointment.patient.email}
                   </p>
                 </div>
               </div>
