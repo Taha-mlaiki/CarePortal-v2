@@ -2,7 +2,14 @@
 
 import { useUserState } from "@/store/userStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarHeartIcon, HeartIcon, LayoutDashboard, LogOut, Store } from "lucide-react";
+import {
+  CalendarHeartIcon,
+  HeartIcon,
+  LayoutDashboard,
+  LogOut,
+  Store,
+  User2,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
@@ -10,7 +17,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ProfileModal from "./Profile";
 import Link from "next/link";
 import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
@@ -73,9 +79,12 @@ export const UserMenu = () => {
             <p>{user.email}</p>
           </div>
         </div>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()} asChild>
-          <ProfileModal />
-        </DropdownMenuItem>
+        <Link href={`${basePath}/profile`}>
+          <DropdownMenuItem className="w-full flex items-center gap-x-2">
+            <User2 className="w-4 h-4" /> Profile
+          </DropdownMenuItem>
+        </Link>
+
         <Separator className="my-0.5 h-[1.5px]" />
         <Link
           href={`${basePath}/dashboard`}

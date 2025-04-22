@@ -270,7 +270,7 @@ const Page = () => {
                     onClick={() => complete()}
                     className="bg-green-600 text-white hover:bg-green-600/90"
                   >
-                    {loading ? "Completing..." : "Complete appointment"}
+                    Complete appointment
                   </Button>
                 )}
                 {(appointment.status === "Canceled" ||
@@ -280,7 +280,7 @@ const Page = () => {
                     onClick={() => onArchived()}
                     className="bg-violet-600 text-white hover:bg-violet-600/90"
                   >
-                    {loading ? "Archiving..." : "Archive appointment"}
+                    Archive appointment
                   </Button>
                 )}
               </div>
