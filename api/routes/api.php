@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CabinetController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PaymentController;
@@ -30,9 +31,9 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post("/manager/cabinet", [CabinetController::class, "updateCabinet"]);
         Route::get("/manager/cabinet/patients", [CabinetController::class, "allCabinetPatients"]);
         Route::post("/manager/cabinet/patients/appointments", [AppointmentController::class, "patientAppointments"]);
-        Route::post("/manager/cabinet/certificates", [CabinetController::class, "createCertaficate"]);
-        Route::get("/manager/cabinet/certaficates", [CabinetController::class, "getCertaficates"]);
-        Route::post("/manager/cabinet/certaficates/send", [CabinetController::class, "sendCertaficate"]);
+        Route::post("/manager/cabinet/certificates", [CertificateController::class, "createCertaficate"]);
+        Route::get("/manager/cabinet/certaficates", [CertificateController::class, "getCertaficates"]);
+        Route::post("/manager/cabinet/certaficates/send", [CertificateController::class, "sendCertaficate"]);
         Route::post("/cabinets", [CabinetController::class, "store"]);
         Route::get("/cabinets/statistiques", [CabinetController::class, "getStatistiques"]);
         Route::get("/cabinets/today-closed", [CabinetController::class, "getTodayClosed"]);
