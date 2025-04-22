@@ -7,6 +7,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\isManager;
@@ -31,7 +32,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::get("/manager/cabinet", [ManagerController::class, "managerCabinet"]);
         Route::post("/manager/cabinet", [ManagerController::class, "updateCabinet"]);
         Route::get("/manager/cabinet/patients", [CabinetController::class, "allCabinetPatients"]);
-        Route::post("/manager/cabinet/patients/appointments", [AppointmentController::class, "patientAppointments"]);
+        Route::post("/manager/cabinet/patients/appointments", [PatientController::class, "patientAppointments"]);
         Route::post("/manager/cabinet/certificates", [CertificateController::class, "createCertaficate"]);
         Route::get("/manager/cabinet/certaficates", [CertificateController::class, "getCertaficates"]);
         Route::post("/manager/cabinet/certaficates/send", [CertificateController::class, "sendCertaficate"]);
@@ -56,7 +57,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         //appointments
         Route::post("/appointments", [AppointmentController::class, "store"]);
         Route::get("/appointments", [AppointmentController::class, "show"]);
-        Route::put("/appointments/{id}/cancel", [AppointmentController::class, "cancel"]);
+        Route::put("/appointments/{id}/cancel", [PatientController::class, "cancel"]);
         // favorites
         Route::get("/patient/favorites", [FavoriteController::class, "index"]);
         Route::post("/patient/favorites", [FavoriteController::class, "store"]);
