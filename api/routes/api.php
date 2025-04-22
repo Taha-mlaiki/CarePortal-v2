@@ -6,6 +6,7 @@ use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\isManager;
@@ -27,8 +28,8 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::middleware([isManager::class])->group(function () {
         Route::get("/manager/cabinet/dates", [CabinetController::class, "getClosing"]);
         Route::post("/manager/cabinet/dates", [CabinetController::class, "setClosing"]);
-        Route::get("/manager/cabinet", [CabinetController::class, "managerCabinet"]);
-        Route::post("/manager/cabinet", [CabinetController::class, "updateCabinet"]);
+        Route::get("/manager/cabinet", [ManagerController::class, "managerCabinet"]);
+        Route::post("/manager/cabinet", [ManagerController::class, "updateCabinet"]);
         Route::get("/manager/cabinet/patients", [CabinetController::class, "allCabinetPatients"]);
         Route::post("/manager/cabinet/patients/appointments", [AppointmentController::class, "patientAppointments"]);
         Route::post("/manager/cabinet/certificates", [CertificateController::class, "createCertaficate"]);
