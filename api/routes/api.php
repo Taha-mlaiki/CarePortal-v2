@@ -68,7 +68,7 @@ Route::middleware([EnsureTokenIsValid::class])->group(function () {
         Route::post('/patient/cabinets/comments', [CommentController::class, 'store']);
         Route::put('/patient/cabinets/comments/{id}', [CommentController::class, 'update']);
         Route::delete('/patient/cabinets/comments/{id}', [CommentController::class, 'destroy']);
-        Route::get("/patient/cabinets/commentable", [CommentController::class, "commentable"]);
+        Route::get("/patient/cabinets/commentable", [CommentController::class, "canCommentCabinet"]);
     });
     
     

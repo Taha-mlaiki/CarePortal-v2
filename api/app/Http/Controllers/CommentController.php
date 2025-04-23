@@ -8,14 +8,7 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-    public function commentable(Request $req)
+    public function canCommentCabinet(Request $req)
     {
         $user = $req->user;
         $cabinetIds = Appointment::where('patient_id', $user->id)
@@ -43,13 +36,6 @@ class CommentController extends Controller
         return response()->json(['comment' => $comment], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Comment $comment)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
