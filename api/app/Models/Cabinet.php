@@ -42,6 +42,6 @@ class Cabinet extends Model
     }
     public function certaficates()
     {
-        return $this->hasMany(Certaficate::class, 'cabinet_id');
+        return $this->hasMany(Certificate::class, 'cabinet_id');
     }
 }
