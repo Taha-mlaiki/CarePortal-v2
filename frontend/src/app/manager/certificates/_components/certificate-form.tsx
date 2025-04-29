@@ -237,7 +237,7 @@ export function CreateCertificateForm({
                         </PopoverTrigger>
                         <PopoverContent className="p-0">
                           <Command>
-                            <CommandInput placeholder="Search Patient by email..." />
+                            <CommandInput placeholder="Search by Date..." />
                             <CommandList>
                               <CommandEmpty>
                                 No Appointment found .

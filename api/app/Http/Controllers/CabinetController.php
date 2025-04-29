@@ -45,7 +45,7 @@ class CabinetController extends Controller
                 $query->where('name', 'LIKE', "%{$request->query('search')}%")
                     ->orWhere('address', 'LIKE', "%{$request->query('search')}%");
             })
-            ->paginate(10);
+            ->paginate(6);
         foreach ($cabinets as $cabinet) {
             $cabinet->appointments_count = $cabinet->appointments()->count();
         }
